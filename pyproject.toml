@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "mirumon-win-client"
+name = "mirumon-desktop-client"
 version = "0.0.1"
 description = "Windows monitoring client"
 authors = ["Slyfoxy <khitrov34@gmail.com>"]
