@@ -26,8 +26,8 @@ class ComputerSystemModel(BaseComponent):
     name: str
     username: str
     workgroup: str
-    domain: str
     part_of_domain: bool = Schema(..., alias="PartOfDomain")
+    domain: str
     number_of_processors: int = Schema(..., alias="NumberOfProcessors")
     number_of_enabled_core: Optional[int] = Schema(None, alias="NumberOfEnabledCore")
     number_of_logical_processors: int = Schema(..., alias="NumberOfLogicalProcessors")
@@ -72,7 +72,7 @@ class NetworkAdapterModel(BaseComponent):
     ip_addresses: List[str] = Schema(..., alias="IPAddress")
 
 
-class DiskModel(BaseComponent):
+class PhysicalDiskModel(BaseComponent):
     status: str
     caption: str
     SerialNumber: Optional[str]
@@ -82,7 +82,7 @@ class DiskModel(BaseComponent):
     Partitions: int
 
 
-class ShareModel(BaseComponent):
+class SharedModel(BaseComponent):
     name: str
     path: str = Schema(..., alias="Path")
 
