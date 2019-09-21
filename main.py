@@ -3,7 +3,7 @@
 
 import wmi
 
-from schemas.schemas import (
+from schemas.components import (
     GroupModel,
     OperatingSystemModel,
     ComputerSystemModel,
@@ -11,16 +11,19 @@ from schemas.schemas import (
     ProcessorModel,
     VideoControllerModel,
     NetworkAdapterModel,
-    DiskModel,
+    PhysicalDiskModel,
     StartupCommandModel,
-    ShareModel,
+    SharedModel,
     PrinterModel,
     InstalledProgramModel,
     EnvironmentModel,
     UserAccountModel,
 )
+from schemas.computer import ComputerModel
 
 computer = wmi.WMI()
+
+computer_response = ComputerModel()
 
 for user in computer.Win32_UserAccount():
     groups = []
@@ -28,43 +31,48 @@ for user in computer.Win32_UserAccount():
         groups.append(GroupModel.from_orm(group))
     u = UserAccountModel.from_orm(user)
     u.groups = groups
-    print(u)
+    computer_response.users.append(u)
 
 for os in computer.Win32_OperatingSystem():
-    print(OperatingSystemModel.from_orm(os))
+    computer_response.operating_systems.append(OperatingSystemModel.from_orm(os))
 
 for computer_system in computer.Win32_ComputerSystem():
-    print(ComputerSystemModel.from_orm(computer_system))
+    computer_response.computer_systems.append(
+        ComputerSystemModel.from_orm(computer_system)
+    )
 
 for mother in computer.Win32_BaseBoard():
-    print(MotherBoardModel.from_orm(mother))
+    computer_response.mother_boards.append(MotherBoardModel.from_orm(mother))
 
 for cpu in computer.Win32_Processor():
-    print(ProcessorModel.from_orm(cpu))
+    computer_response.cpu.append(ProcessorModel.from_orm(cpu))
 
 for gpu in computer.Win32_VideoController():
-    print(VideoControllerModel.from_orm(gpu))
+    computer_response.gpu.append(VideoControllerModel.from_orm(gpu))
 
 for interface in computer.Win32_NetworkAdapterConfiguration(IPEnabled=1):
-    print(NetworkAdapterModel.from_orm(interface))
+    computer_response.network_adapters.append(NetworkAdapterModel.from_orm(interface))
 
 for physical_disk in computer.Win32_DiskDrive():
-    print(DiskModel.from_orm(physical_disk))
+    computer_response.disks.append(PhysicalDiskModel.from_orm(physical_disk))
 
 for share in computer.Win32_Share():
-    print(ShareModel.from_orm(share))
+    computer_response.shared.append(SharedModel.from_orm(share))
 
 for startup in computer.Win32_StartupCommand():
-    print(StartupCommandModel.from_orm(startup))
+    computer_response.startup_commands.append(StartupCommandModel.from_orm(startup))
 
 for environment in computer.Win32_Environment():
-    print(EnvironmentModel.from_orm(environment))
+    computer_response.environment.append(EnvironmentModel.from_orm(environment))
 
 for printer in computer.Win32_Printer():
-    print(PrinterModel.from_orm(printer))
+    computer_response.printers.append(PrinterModel.from_orm(printer))
 
 try:
     for program in computer.Win32_InstalledWin32Program():
-        print(InstalledProgramModel.from_orm(program))
+        computer_response.programs.append(InstalledProgramModel.from_orm(program))
 except wmi.x_access_denied:
     print("Run script as admin to see installed programs!")
+
+with open("tmp.py", "w", encoding="utf-8") as file:
+    file.write(str(computer_response.dict()))
