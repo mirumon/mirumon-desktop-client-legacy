@@ -3,30 +3,68 @@
 
 import wmi
 
+from schemas.schemas import (
+    GroupModel,
+    OperatingSystemModel,
+    ComputerSystemModel,
+    MotherBoardModel,
+    ProcessorModel,
+    VideoControllerModel,
+    NetworkAdapterModel,
+    DiskModel,
+    StartupCommandModel,
+    ShareModel,
+    PrinterModel,
+    InstalledProgramModel,
+    EnvironmentModel,
+    UserAccountModel,
+)
+
 computer = wmi.WMI()
 
-computer_info = computer.Win32_ComputerSystem()[0]
-os = computer.Win32_OperatingSystem()[0]
-processor = computer.Win32_Processor()
-gpu = computer.Win32_VideoController()
+for user in computer.Win32_UserAccount():
+    groups = []
+    for group in user.associators("Win32_GroupUser"):
+        groups.append(GroupModel.from_orm(group))
+    u = UserAccountModel.from_orm(user)
+    u.groups = groups
+    print(u)
 
+for os in computer.Win32_OperatingSystem():
+    print(OperatingSystemModel.from_orm(os))
 
-os_version = " ".join([os.Version, os.BuildNumber])
-print(f"OS Version: {os_version}")
+for computer_system in computer.Win32_ComputerSystem():
+    print(ComputerSystemModel.from_orm(computer_system))
 
-os_name = os.Name.split("|")[0]
-print(f"OS Name: {os_name}")
-print(f"Computer name: {computer_info.name}")
-print(f"Username: {computer_info.username}")
-print(f"Workgroup: {computer_info.workgroup}")
-print(f"Domain: {computer_info.domain}")
+for mother in computer.Win32_BaseBoard():
+    print(MotherBoardModel.from_orm(mother))
 
-print(f"CPU: {[cpu.name.strip() for cpu in processor]}")
+for cpu in computer.Win32_Processor():
+    print(ProcessorModel.from_orm(cpu))
 
-system_ram = round(float(os.TotalVisibleMemorySize) / (1024 * 1024))  # KB to GB
-print(f"RAM: {system_ram} GB")
+for gpu in computer.Win32_VideoController():
+    print(VideoControllerModel.from_orm(gpu))
 
-print(f"Graphics Cards: {[g.name for g in gpu]}")
+for interface in computer.Win32_NetworkAdapterConfiguration(IPEnabled=1):
+    print(NetworkAdapterModel.from_orm(interface))
 
-disks = computer.Win32_LogicalDisk()
-print(f"Disks: {[disk.name for disk in disks]}")
+for physical_disk in computer.Win32_DiskDrive():
+    print(DiskModel.from_orm(physical_disk))
+
+for share in computer.Win32_Share():
+    print(ShareModel.from_orm(share))
+
+for startup in computer.Win32_StartupCommand():
+    print(StartupCommandModel.from_orm(startup))
+
+for environment in computer.Win32_Environment():
+    print(EnvironmentModel.from_orm(environment))
+
+for printer in computer.Win32_Printer():
+    print(PrinterModel.from_orm(printer))
+
+try:
+    for program in computer.Win32_InstalledWin32Program():
+        print(InstalledProgramModel.from_orm(program))
+except wmi.x_access_denied:
+    print("Run script as admin to see installed programs!")
