@@ -108,3 +108,7 @@ venv.bak/
 
 # VS Code
 .vscode/
+
+# Temp files
+tmp.*
+temp.*
