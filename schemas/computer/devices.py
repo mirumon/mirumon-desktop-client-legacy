@@ -10,5 +10,3 @@ class PrinterModel(BaseComponent):
     published: bool
     printer_status: str = Schema(..., alias="PrinterStatus")
     driver_name: str = Schema(..., alias="DriverName")
-
-

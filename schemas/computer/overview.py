@@ -1,7 +1,5 @@
-from typing import Dict
 from typing import Optional, List
 
-from pydantic import BaseModel
 from pydantic import Schema
 
 from schemas.computer.base import BaseComponent
@@ -26,29 +24,8 @@ class OperatingSystemModel(BaseComponent):
 
 
 class ComputerSystemModel(BaseComponent):
-    caption: str
     name: str
     username: str
     workgroup: str
+    domain: str
     part_of_domain: bool = Schema(..., alias="PartOfDomain")
-    domain: str
-    number_of_processors: int = Schema(..., alias="NumberOfProcessors")
-    number_of_enabled_core: Optional[int] = Schema(None, alias="NumberOfEnabledCore")
-    number_of_logical_processors: int = Schema(..., alias="NumberOfLogicalProcessors")
-
-
-class ComputerInList(BaseModel):
-    name: str
-    username: str
-    domain: str
-
-
-class ComputerDetails(BaseModel):  # todo create models
-    name: str
-    domain: str
-    workgroup: str
-    users: List = []
-    current_user: Dict
-    logon_users: List = []
-    os: List = []
-    enviroment: List = []

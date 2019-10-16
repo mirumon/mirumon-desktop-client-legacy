@@ -10,6 +10,7 @@ class EventType(str, Enum):  # noqa: WPS600
     registration: str = "registration"
     auth = "auth"
 
+    computers_list: str = "computers-list"
     details: str = "details"
 
     users: str = "users"
@@ -42,3 +43,7 @@ class EventInRequest(BaseModel):
 class EventInResponse(BaseModel):
     event: Event
     payload: EventPayload
+
+
+class EventErrorResponse(BaseModel):
+    error: Union[str, Dict, List]
