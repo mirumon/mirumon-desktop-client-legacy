@@ -3,12 +3,12 @@ import json
 import logging
 
 import websockets
-import wmi
 
-import config
-from schemas.events.base import EventInResponse, EventInRequest, EventErrorResponse
-from schemas.status import StatusType, Status
-from services import get_computer_mac_address, handle_event, get_computer_details
+import wmi
+from app import config
+from app.schemas.events import EventErrorResponse, EventInRequest, EventInResponse
+from app.schemas.status import Status, StatusType
+from app.services import get_computer_details, get_computer_mac_address, handle_event
 
 
 async def start_connection(server_endpoint, computer_wmi: wmi.WMI):

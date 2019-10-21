@@ -1,8 +1,8 @@
-from typing import Optional, List
+from typing import List, Optional
 
 from pydantic import Schema
 
-from schemas.computer.base import BaseComponent
+from app.schemas.computer.base import BaseComponent
 
 
 class MotherBoardModel(BaseComponent):

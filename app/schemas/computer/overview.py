@@ -1,8 +1,8 @@
-from typing import Optional, List
+from typing import List
 
 from pydantic import Schema
 
-from schemas.computer.base import BaseComponent
+from app.schemas.computer.base import BaseComponent
 
 
 class OperatingSystemModel(BaseComponent):

@@ -2,10 +2,8 @@ from typing import Any
 from uuid import getnode as get_mac
 
 import wmi
-
-from schemas.computer.overview import ComputerSystemModel
-from schemas.events.base import EventType
-from schemas.events.computer.details import ComputerDetails, ComputerInList
+from app.schemas.computer import ComputerSystemModel
+from app.schemas.events import ComputerDetails, ComputerInList, EventType
 
 
 def get_computer_mac_address() -> str:
