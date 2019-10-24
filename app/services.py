@@ -55,7 +55,22 @@ def get_computer_in_list(mac_address: str, computer: wmi.WMI) -> ComputerInList:
     )
 
 
-EVENTS_HANDLERS = {
+def get_installed_programs(
+        mac_address: str, computer: wmi.WMI
+) -> List[InstalledProgramModel]:
+    programs = []
+    try:
+        for program in computer.Win32_InstalledWin32Program():
+            programs.append(InstalledProgramModel.from_orm(program))
+    except wmi.x_access_denied:
+        logging.error("Run as admin to see installed programs!")
+        raise KeyError
+
+    return programs
+
+
+event_handlers = {
     EventType.details: get_computer_details,
     EventType.computers_list: get_computer_in_list,
+    EventType.installed_programs: get_installed_programs,
 }
