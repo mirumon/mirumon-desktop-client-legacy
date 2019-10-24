@@ -1,7 +1,4 @@
-#!/usr/bin/env bash
-
-set -e
-set -x
-
 black --check app
 isort --recursive app
+flake8 app
+mypy app
