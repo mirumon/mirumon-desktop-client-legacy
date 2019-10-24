@@ -41,10 +41,7 @@ async def start_connection(server_endpoint: str,
         try:
             event_payload = handle_event(request.event.type, mac_address, computer_wmi)
         except KeyError:
-            await websocket.send(
-                EventErrorResponse(error="event is not supported").json()
-            )
-            continue
+            event_payload = EventErrorResponse(error="event is not supported")
         logging.debug(event_payload)
         response = EventInResponse(event=request.event, payload=event_payload)
         await websocket.send(response.json())
