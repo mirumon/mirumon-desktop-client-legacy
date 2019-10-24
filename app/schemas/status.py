@@ -3,7 +3,7 @@ from enum import Enum
 from pydantic import BaseModel
 
 
-class StatusType(str, Enum):
+class StatusType(str, Enum):  # noqa: WPS600
     registration_success: str = "registration-success"
     registration_failed: str = "registration-failed"
     auth_success: str = "auth-success"

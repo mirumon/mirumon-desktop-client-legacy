@@ -3,18 +3,19 @@ import json
 import logging
 
 import websockets
-
 import wmi
+
 from app import config
-from app.schemas.events import EventErrorResponse, EventInRequest, EventInResponse
+from app.schemas.events.base import EventErrorResponse, EventInRequest, EventInResponse
 from app.schemas.status import Status, StatusType
 from app.services import get_computer_details, get_computer_mac_address, handle_event
 
 
-async def start_connection(server_endpoint, computer_wmi: wmi.WMI):
-    websocket = await websockets.connect(server_endpoint)
-
-    mac_address = get_computer_mac_address()
+async def process_registration(
+        mac_address: str,
+        websocket: websockets.WebSocketClientProtocol,
+        computer_wmi: wmi.WMI,
+) -> bool:
     computer = get_computer_details(mac_address, computer_wmi)
     logging.debug(computer)
     await websocket.send(computer.json())
@@ -23,14 +24,20 @@ async def start_connection(server_endpoint, computer_wmi: wmi.WMI):
     logging.debug(auth_response)
     status = Status(**auth_response)
     logging.info(status.status)
-    if status.status == StatusType.registration_failed:
-        exit(1)
+    return status.status == StatusType.registration_success
+
+
+async def start_connection(server_endpoint: str,
+                           computer_wmi: wmi.WMI) -> None:  # noqa: WPS210
+    websocket = await websockets.connect(server_endpoint)
+    mac_address = get_computer_mac_address()
+    if not await process_registration(mac_address, websocket, computer_wmi):
+        exit(1)  # noqa: WPS421
 
     while True:
         recv = await websocket.recv()
         logging.debug(recv)
-        payload = json.loads(recv)
-        request = EventInRequest(**payload)
+        request = EventInRequest(**json.loads(recv))
         try:
             event_payload = handle_event(request.event.type, mac_address, computer_wmi)
         except KeyError:

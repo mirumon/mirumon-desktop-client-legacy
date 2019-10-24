@@ -1,16 +1,21 @@
-from typing import Any
+import logging
+from typing import Any, List
 from uuid import getnode as get_mac
 
 import wmi
-from app.schemas.computer import ComputerSystemModel
-from app.schemas.events import ComputerDetails, ComputerInList, EventType
+
+from app.schemas.computer.overview import ComputerSystemModel
+from app.schemas.computer.software import InstalledProgramModel
+from app.schemas.events.base import EventType
+from app.schemas.events.computer.details import ComputerDetails, ComputerInList
 
 
 def get_computer_mac_address() -> str:
     """Convert uuid.getnode() result to mac address by some magic"""
     mac = get_mac()
-    h = iter(hex(mac)[2:].zfill(12))
-    return ":".join(i + next(h) for i in h)
+    magic_number = 12
+    hex_mac = iter(hex(mac)[2:].zfill(magic_number))
+    return ":".join(num + next(hex_mac) for num in hex_mac)
 
 
 def get_current_user(computer: wmi.WMI) -> Any:
@@ -19,9 +24,8 @@ def get_current_user(computer: wmi.WMI) -> Any:
     )
 
 
-def handle_event(event_type: EventType, mac_address: str, computer: wmi.WMI):
-    handler = EVENTS_HANDLERS[event_type]
-    return handler(mac_address, computer)
+def handle_event(event_type: EventType, mac_address: str, computer: wmi.WMI) -> Any:
+    return event_handlers[event_type](mac_address, computer)
 
 
 def get_computer_details(mac_address: str, computer: wmi.WMI) -> ComputerDetails:
