@@ -12,9 +12,9 @@ from app.services import get_computer_details, get_computer_mac_address, handle_
 
 
 async def process_registration(
-        mac_address: str,
-        websocket: websockets.WebSocketClientProtocol,
-        computer_wmi: wmi.WMI,
+    mac_address: str,
+    websocket: websockets.WebSocketClientProtocol,
+    computer_wmi: wmi.WMI,
 ) -> bool:
     computer = get_computer_details(mac_address, computer_wmi)
     logging.debug(computer)
@@ -27,8 +27,9 @@ async def process_registration(
     return status.status == StatusType.registration_success
 
 
-async def start_connection(server_endpoint: str,
-                           computer_wmi: wmi.WMI) -> None:  # noqa: WPS210
+async def start_connection(
+    server_endpoint: str, computer_wmi: wmi.WMI
+) -> None:  # noqa: WPS210
     websocket = await websockets.connect(server_endpoint)
     mac_address = get_computer_mac_address()
     if not await process_registration(mac_address, websocket, computer_wmi):
