@@ -55,9 +55,7 @@ def get_computer_in_list(mac_address: str, computer: wmi.WMI) -> ComputerInList:
     )
 
 
-def get_installed_programs(
-        mac_address: str, computer: wmi.WMI
-) -> List[InstalledProgramModel]:
+def get_installed_programs(computer: wmi.WMI) -> List[InstalledProgramModel]:
     programs = []
     try:
         for program in computer.Win32_InstalledWin32Program():
