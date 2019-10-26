@@ -12,6 +12,7 @@ pypiwin32 = "^223.0"
 pydantic = "^1.0"
 websockets = "^8.0"
 python-dotenv = "^0.10.3"
+loguru = "^0.3.2"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^18.3-alpha.0", allows-prereleases = true}
