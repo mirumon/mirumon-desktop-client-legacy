@@ -48,9 +48,9 @@ async def start_connection(
         await websocket.send(response.json())
 
 
-asyncio.get_event_loop().run_until_complete(
-    start_connection(
-        server_endpoint=settings.server_websocket_url, computer_wmi=wmi.WMI()
+if __name__ == "__main__":
+    asyncio.run(
+        start_connection(
+            server_endpoint=settings.server_websocket_url, computer_wmi=wmi.WMI()
+        )
     )
-)
-asyncio.get_event_loop().run_forever()
