@@ -1,5 +1,6 @@
 from enum import Enum
 from typing import Dict, List, Union
+from uuid import UUID
 
 from pydantic import BaseModel
 
@@ -33,7 +34,7 @@ class EventType(str, Enum):  # noqa: WPS600
 
 class Event(BaseModel):
     type: EventType
-    id: str
+    id: UUID
 
 
 class EventInRequest(BaseModel):
