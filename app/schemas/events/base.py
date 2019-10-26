@@ -47,4 +47,4 @@ class EventInResponse(BaseModel):
 
 
 class EventErrorResponse(BaseModel):
-    error: Union[str, Dict, List]
+    error: Union[Dict, List, str]
