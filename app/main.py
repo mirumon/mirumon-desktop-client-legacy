@@ -1,9 +1,9 @@
 import asyncio
 import json
-import logging
 
 import websockets
 import wmi
+from loguru import logger
 
 from app.config import settings
 from app.schemas.events.base import EventErrorResponse, EventInRequest, EventInResponse
@@ -16,14 +16,14 @@ async def process_registration(
     websocket: websockets.WebSocketClientProtocol,
     computer_wmi: wmi.WMI,
 ) -> bool:
-    computer = get_computer_details(mac_address, computer_wmi)
-    logging.debug(computer)
-    await websocket.send(computer.json())
+    computer = get_computer_details(mac_address, computer_wmi).json()
+    logger.bind(payload=computer).debug("process registration")
+    await websocket.send(computer)
 
     auth_response = json.loads(await websocket.recv())
-    logging.debug(auth_response)
+    logger.debug(auth_response)
     status = Status(**auth_response)
-    logging.info(status.status)
+    logger.info(f"registration status: {status.status}")
     return status.status == StatusType.registration_success
 
 
@@ -37,13 +37,13 @@ async def start_connection(
 
     while True:
         recv = await websocket.recv()
-        logging.debug(recv)
+        logger.debug(f"raw ws data received {recv}")
         request = EventInRequest(**json.loads(recv))
         try:
             event_payload = handle_event(request.event.type, mac_address, computer_wmi)
         except KeyError:
             event_payload = EventErrorResponse(error="event is not supported")
-        logging.debug(event_payload)
+        logger.bind(payload=event_payload).debug("event response")
         response = EventInResponse(event=request.event, payload=event_payload)
         await websocket.send(response.json())
 

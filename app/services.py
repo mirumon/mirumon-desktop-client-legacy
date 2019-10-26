@@ -1,8 +1,8 @@
-import logging
 from typing import Any, List
 from uuid import getnode as get_mac
 
 import wmi
+from loguru import logger
 
 from app.schemas.computer.overview import ComputerSystemModel
 from app.schemas.computer.software import InstalledProgramModel
@@ -61,9 +61,8 @@ def get_installed_programs(computer: wmi.WMI) -> List[InstalledProgramModel]:
         for program in computer.Win32_InstalledWin32Program():
             programs.append(InstalledProgramModel.from_orm(program))
     except wmi.x_access_denied:
-        logging.error("Run as admin to see installed programs!")
+        logger.error("Run as admin to see installed programs!")
         raise KeyError
-
     return programs
 
 
