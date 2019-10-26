@@ -5,7 +5,7 @@ import logging
 import websockets
 import wmi
 
-from app import config
+from app.config import settings
 from app.schemas.events.base import EventErrorResponse, EventInRequest, EventInResponse
 from app.schemas.status import Status, StatusType
 from app.services import get_computer_details, get_computer_mac_address, handle_event
@@ -50,7 +50,7 @@ async def start_connection(
 
 asyncio.get_event_loop().run_until_complete(
     start_connection(
-        server_endpoint=config.SERVER_WEBSOCKET_URL, computer_wmi=wmi.WMI()
+        server_endpoint=settings.server_websocket_url, computer_wmi=wmi.WMI()
     )
 )
 asyncio.get_event_loop().run_forever()
