@@ -25,7 +25,7 @@ def get_current_user(computer: wmi.WMI) -> Any:
 
 
 def handle_event(event_type: EventType, mac_address: str, computer: wmi.WMI) -> Any:
-    return event_handlers[event_type](mac_address, computer)
+    return event_handlers[event_type](mac_address=mac_address, computer=computer)
 
 
 def get_computer_details(mac_address: str, computer: wmi.WMI) -> ComputerDetails:
@@ -55,7 +55,7 @@ def get_computer_in_list(mac_address: str, computer: wmi.WMI) -> ComputerInList:
     )
 
 
-def get_installed_programs(computer: wmi.WMI) -> List[InstalledProgramModel]:
+def get_installed_programs(computer: wmi.WMI, **_) -> List[InstalledProgramModel]:
     programs = []
     try:
         for program in computer.Win32_InstalledWin32Program():
