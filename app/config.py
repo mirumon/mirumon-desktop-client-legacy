@@ -19,6 +19,9 @@ class Settings(BaseSettings):
     server_websocket_url: str = Field(..., env="SERVER_WEBSOCKET_URL")
     reconnect_delay: int = Field(..., env="RECONNECT_DELAY")
 
+    class Config:
+        case_sensitive = True
+
 
 settings = Settings()
 
