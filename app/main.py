@@ -48,9 +48,21 @@ async def start_connection(
         await websocket.send(response)
 
 
+@logger.catch
+async def server_connection_with_retry(
+    server_endpoint: str, computer_wmi: wmi.WMI
+) -> None:
+    while True:
+        try:
+            await start_connection(server_endpoint, computer_wmi)
+        except (websockets.exceptions.ConnectionClosedError, OSError):
+            await asyncio.sleep(settings.reconnect_delay)
+            logger.debug(f"reconnection after {settings.reconnect_delay} seconds")
+
+
 if __name__ == "__main__":
     asyncio.run(
-        start_connection(
+        server_connection_with_retry(
             server_endpoint=settings.server_websocket_url, computer_wmi=wmi.WMI()
         )
     )
