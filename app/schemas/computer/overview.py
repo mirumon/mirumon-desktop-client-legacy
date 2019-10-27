@@ -1,5 +1,3 @@
-from pydantic import Schema
-
 from app.schemas.computer.base import BaseComponent
 
 
@@ -8,4 +6,4 @@ class ComputerSystemModel(BaseComponent):
     username: str
     workgroup: str
     domain: str
-    part_of_domain: bool = Schema(..., alias="PartOfDomain")
+    part_of_domain: bool
