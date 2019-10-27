@@ -68,14 +68,14 @@ def get_computer_in_list(mac_address: str, computer: wmi.WMI) -> ComputerInList:
 
 
 def get_installed_programs(computer: wmi.WMI, **_) -> List[InstalledProgramModel]:
-    programs = []
     try:
-        for program in computer.Win32_InstalledWin32Program():
-            programs.append(InstalledProgramModel.from_orm(program))
+        return [
+            InstalledProgramModel.from_orm(program)
+            for program in computer.Win32_InstalledWin32Program()
+        ]
     except wmi.x_access_denied:
         logger.error("Run as admin to see installed programs!")
         raise KeyError
-    return programs
 
 
 event_handlers = {
