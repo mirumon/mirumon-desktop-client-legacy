@@ -5,21 +5,20 @@ from pathlib import Path
 from dotenv import load_dotenv
 from loguru import logger
 from pydantic import BaseSettings
-from pydantic.fields import Field
 
 from app.logging import InterceptHandler, format_record
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-ENV_PATH = BASE_DIR.joinpath('.env')
+ENV_PATH = BASE_DIR.joinpath(".env")
 load_dotenv(ENV_PATH)
 
 
 class Settings(BaseSettings):
-    debug: bool = Field(False, env="DEBUG")
-    server_websocket_url: str = Field(..., env="SERVER_WEBSOCKET_URL")
-    reconnect_delay: int = Field(..., env="RECONNECT_DELAY")
+    server_websocket_url: str
+    reconnect_delay: int
+    debug: bool = False
 
-    class Config:
+    class Config:  # noqa: WPS431
         case_sensitive = True
 
 

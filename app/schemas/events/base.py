@@ -1,10 +1,13 @@
 from enum import Enum
-from typing import Dict, List, Union
+from typing import List, Union
 from uuid import UUID
 
 from pydantic import BaseModel
 
-EventPayload = Union[List, Dict]
+from app.schemas.computer.software import InstalledProgramModel
+from app.schemas.events.computer.details import ComputerDetails, ComputerInList
+
+EventPayload = Union[ComputerInList, ComputerDetails, List[InstalledProgramModel]]
 
 
 class EventType(str, Enum):  # noqa: WPS600
@@ -47,4 +50,4 @@ class EventInResponse(BaseModel):
 
 
 class EventErrorResponse(BaseModel):
-    error: Union[Dict, List, str]
+    error: str
