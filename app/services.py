@@ -6,7 +6,7 @@ from loguru import logger
 
 from app.schemas.computer.overview import ComputerSystemModel
 from app.schemas.computer.software import InstalledProgramModel
-from app.schemas.computer.users import User, LogonType
+from app.schemas.computer.users import LogonType, User
 from app.schemas.events.base import EventType
 from app.schemas.events.computer.details import ComputerDetails, ComputerInList
 
@@ -20,20 +20,19 @@ def get_computer_mac_address() -> str:
 
 
 def get_current_user(computer: wmi.WMI) -> User:
-    users = []
-    deps = []
+    last_logon_user = None
     for s in computer.Win32_LogonSession():
         if s.LogonType != LogonType.interactive:
             continue
         try:
             for user in s.references("Win32_LoggedOnUser"):
-                if user.Antecedent not in users:
-                    users.append(user.Antecedent)
-                    deps.append(user.Dependent)
-        except wmi.x_wmi as e:
+                last_logon_user = user.Antecedent
+                raise ValueError
+        except wmi.x_wmi:
             continue
-    dependent = max(deps, key=lambda dep: dep.StartTime)
-    user = users[deps.index(dependent)]
+        except ValueError:
+            break
+    user = last_logon_user
     return User.from_orm(user)
 
 
