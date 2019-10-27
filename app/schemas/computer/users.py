@@ -1,11 +1,11 @@
-from enum import Enum
+from enum import IntEnum
 
 from pydantic import Field
 
 from app.schemas.computer.base import BaseComponent
 
 
-class LogonType(int, Enum):
+class LogonType(IntEnum):
     interactive = 2
 
 

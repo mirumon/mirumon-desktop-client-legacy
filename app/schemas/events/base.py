@@ -9,7 +9,7 @@ EventPayload = Union[List, Dict]
 
 class EventType(str, Enum):  # noqa: WPS600
     registration: str = "registration"
-    auth = "auth"
+    auth: str = "auth"
 
     computers_list: str = "computers-list"
     details: str = "details"
