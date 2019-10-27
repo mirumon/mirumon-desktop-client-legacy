@@ -1,6 +1,6 @@
 import logging
 import sys
-from os.path import dirname, join
+from pathlib import Path
 
 from dotenv import load_dotenv
 from loguru import logger
@@ -9,13 +9,15 @@ from pydantic.fields import Field
 
 from app.logging import InterceptHandler, format_record
 
-env_path = join(dirname(__file__), "..", ".env")
-load_dotenv(env_path)
+BASE_DIR = Path(__file__).resolve().parent.parent
+ENV_PATH = BASE_DIR.joinpath('.env')
+load_dotenv(ENV_PATH)
 
 
 class Settings(BaseSettings):
-    server_websocket_url: str = Field(..., env="SERVER_WEBSOCKET_URL")
     debug: bool = Field(False, env="DEBUG")
+    server_websocket_url: str = Field(..., env="SERVER_WEBSOCKET_URL")
+    reconnect_delay: int = Field(..., env="RECONNECT_DELAY")
 
 
 settings = Settings()
