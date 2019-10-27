@@ -20,20 +20,14 @@ def get_computer_mac_address() -> str:
 
 
 def get_current_user(computer: wmi.WMI) -> User:
-    last_logon_user = None
     for s in computer.Win32_LogonSession():
         if s.LogonType != LogonType.interactive:
             continue
         try:
             for user in s.references("Win32_LoggedOnUser"):
-                last_logon_user = user.Antecedent
-                raise ValueError
+                return User.from_orm(user.Antecedent)
         except wmi.x_wmi:
             continue
-        except ValueError:
-            break
-    user = last_logon_user
-    return User.from_orm(user)
 
 
 def handle_event(event_type: EventType, mac_address: str, computer: wmi.WMI) -> Any:
