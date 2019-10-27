@@ -6,6 +6,7 @@ from loguru import logger
 
 from app.schemas.computer.overview import ComputerSystemModel
 from app.schemas.computer.software import InstalledProgramModel
+from app.schemas.computer.users import User, LogonType
 from app.schemas.events.base import EventType
 from app.schemas.events.computer.details import ComputerDetails, ComputerInList
 
@@ -18,10 +19,22 @@ def get_computer_mac_address() -> str:
     return ":".join(num + next(hex_mac) for num in hex_mac)
 
 
-def get_current_user(computer: wmi.WMI) -> Any:
-    return (
-        computer.Win32_LogonSession()[0].references("Win32_LoggedOnUser")[0].Antecedent
-    )
+def get_current_user(computer: wmi.WMI) -> User:
+    users = []
+    deps = []
+    for s in computer.Win32_LogonSession():
+        if s.LogonType != LogonType.interactive:
+            continue
+        try:
+            for user in s.references("Win32_LoggedOnUser"):
+                if user.Antecedent not in users:
+                    users.append(user.Antecedent)
+                    deps.append(user.Dependent)
+        except wmi.x_wmi as e:
+            continue
+    dependent = max(deps, key=lambda dep: dep.StartTime)
+    user = users[deps.index(dependent)]
+    return User.from_orm(user)
 
 
 def handle_event(event_type: EventType, mac_address: str, computer: wmi.WMI) -> Any:
@@ -37,21 +50,21 @@ def get_computer_details(mac_address: str, computer: wmi.WMI) -> ComputerDetails
         name=model.name,
         domain=model.domain,
         workgroup=model.workgroup,
-        current_user={"name": user.name},
+        current_user=user,
     )
 
 
 def get_computer_in_list(mac_address: str, computer: wmi.WMI) -> ComputerInList:
     computer_system = computer.Win32_ComputerSystem()[0]
-    model = ComputerSystemModel.from_orm(computer_system)
+    pc = ComputerSystemModel.from_orm(computer_system)
     user = get_current_user(computer)
     return ComputerInList(
         mac_address=mac_address,
-        name=model.name,
-        domain=model.domain,
-        workgroup=model.workgroup,
+        name=pc.name,
+        domain=pc.domain,
+        workgroup=pc.workgroup,
         username=user.name,
-        part_of_domain=model.part_of_domain,
+        part_of_domain=pc.part_of_domain,
     )
 
 

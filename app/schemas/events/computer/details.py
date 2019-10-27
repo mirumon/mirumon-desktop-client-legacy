@@ -2,6 +2,8 @@ from typing import Dict, List
 
 from pydantic import BaseModel
 
+from app.schemas.computer.users import User
+
 
 class ComputerInList(BaseModel):
     mac_address: str
@@ -17,5 +19,5 @@ class ComputerDetails(BaseModel):
     name: str
     domain: str
     workgroup: str
-    current_user: Dict
+    current_user: User
     os: List = []
