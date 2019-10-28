@@ -29,6 +29,3 @@ LOGGING_LEVEL = logging.DEBUG if settings.debug else logging.INFO
 logging.basicConfig(
     handlers=[InterceptHandler(level=LOGGING_LEVEL)], level=LOGGING_LEVEL
 )
-logger.configure(
-    handlers=[{"sink": sys.stderr, "level": LOGGING_LEVEL, "format": format_record}]
-)
