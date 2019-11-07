@@ -33,14 +33,14 @@ async def process_registration(
 
 
 async def start_connection(
-    service: Any, server_endpoint: str, computer_wmi: wmi.WMI
+    server_endpoint: str, computer_wmi: wmi.WMI
 ) -> None:  # noqa: WPS210
     websocket = await websockets.connect(server_endpoint)
     mac_address = get_computer_mac_address()
     if not await process_registration(mac_address, websocket, computer_wmi):
         exit(1)  # noqa: WPS421
 
-    while service.is_running:
+    while True:
         request = EventInRequest(**json.loads(await websocket.recv()))
         try:
             event_payload: Union[EventPayload, EventErrorResponse] = handle_event(
@@ -57,11 +57,11 @@ async def start_connection(
 
 @logger.catch
 async def server_connection_with_retry(
-    service: Any, server_endpoint: str, computer_wmi: wmi.WMI
+   server_endpoint: str, computer_wmi: wmi.WMI
 ) -> None:
-    while service.is_running:
+    while True:
         try:
-            await start_connection(service, server_endpoint, computer_wmi)
+            await start_connection(server_endpoint, computer_wmi)
         except (websockets.exceptions.ConnectionClosedError, OSError):
             await asyncio.sleep(settings.reconnect_delay)
             logger.debug(f"reconnection after {settings.reconnect_delay} seconds")
