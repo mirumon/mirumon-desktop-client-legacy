@@ -13,7 +13,6 @@ https://www.thepythoncorner.com/2018/08/how-to-create-a-windows-service-in-pytho
 
 """
 import asyncio
-from typing import Any
 
 import servicemanager
 import win32event
@@ -23,11 +22,6 @@ import wmi
 
 from app import config
 from app.main import server_connection_with_retry, Lifespan
-from app.services import get_computer_mac_address
-
-_mac_address = get_computer_mac_address()
-_computer_wmi = wmi.WMI()
-_websocket = None
 
 
 async def start(service):
@@ -50,8 +44,8 @@ class AppServerSvc(win32serviceutil.ServiceFramework):
     # this text shows up as the description in the SCM
     _svc_description_ = "Monitoring service by mirumon team"
 
-    # _exe_name_ = "MirumonService.exe"  # ??? #_exe_path_
-    event: Any
+    event: asyncio.Event
+    lifespan: Lifespan
 
     def __init__(self, args):
         win32serviceutil.ServiceFramework.__init__(self, args)
@@ -75,7 +69,7 @@ class AppServerSvc(win32serviceutil.ServiceFramework):
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
         win32event.SetEvent(self.hWaitStop)
         self.event.set()
-        servicemanager.LogInfoMsg('service stoped')
+        servicemanager.LogInfoMsg('service stopped')
 
     def SvcOtherEx(self, control, event_type, data):
         # See the MSDN documentation for "HandlerEx callback" for a list
