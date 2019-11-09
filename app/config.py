@@ -1,12 +1,10 @@
 import logging
-import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
-from loguru import logger
 from pydantic import BaseSettings
 
-from app.logging import InterceptHandler, format_record
+from app.logging import InterceptHandler
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 ENV_PATH = BASE_DIR.joinpath(".env")
