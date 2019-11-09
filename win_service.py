@@ -21,7 +21,7 @@ import win32serviceutil
 import wmi
 
 from app import config
-from app.main import server_connection_with_retry, Lifespan
+from app.main import Lifespan, server_connection_with_retry
 
 
 async def start(service):
@@ -52,7 +52,7 @@ class AppServerSvc(win32serviceutil.ServiceFramework):
         # create an event to listen for stop requests on
         self.hWaitStop = win32event.CreateEvent(None, 0, 0, None)
 
-        self.lifespan = Lifespan(self)
+        self.lifespan = Lifespan()
         self.loop = asyncio.get_event_loop()
 
     def SvcDoRun(self):
@@ -63,13 +63,13 @@ class AppServerSvc(win32serviceutil.ServiceFramework):
 
         self.event = asyncio.Event()
         self.loop.run_until_complete(start(self))
-        servicemanager.LogInfoMsg("connection to server...")
+        servicemanager.LogInfoMsg("service stopped")
 
     def SvcStop(self):
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
         win32event.SetEvent(self.hWaitStop)
+        self.lifespan.is_running = False
         self.event.set()
-        servicemanager.LogInfoMsg('service stopped')
 
     def SvcOtherEx(self, control, event_type, data):
         # See the MSDN documentation for "HandlerEx callback" for a list

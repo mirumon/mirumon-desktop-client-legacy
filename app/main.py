@@ -15,7 +15,10 @@ from app.schemas.events.base import (
 )
 from app.schemas.status import Status, StatusType
 from app.services import get_computer_details, get_computer_mac_address, handle_event
-from lifespan import Lifespan
+
+
+class Lifespan:
+    is_running: bool = True
 
 
 @logger.catch
