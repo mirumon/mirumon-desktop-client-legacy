@@ -17,6 +17,22 @@ from app.schemas.status import Status, StatusType
 from app.services import get_computer_details, get_computer_mac_address, handle_event
 
 
+class Lifespan:
+    is_running: bool = True
+
+
+@logger.catch
+async def server_connection_with_retry(
+    lifespan: Lifespan, server_endpoint: str, computer_wmi: wmi.WMI
+) -> None:
+    while lifespan.is_running:
+        try:
+            await start_connection(lifespan, server_endpoint, computer_wmi)
+        except (websockets.exceptions.ConnectionClosedError, OSError):
+            await asyncio.sleep(settings.reconnect_delay)
+            logger.debug(f"reconnection after {settings.reconnect_delay} seconds")
+
+
 async def process_registration(
     mac_address: str,
     websocket: websockets.WebSocketClientProtocol,
@@ -33,14 +49,14 @@ async def process_registration(
 
 
 async def start_connection(
-    server_endpoint: str, computer_wmi: wmi.WMI
+    lifespan: Lifespan, server_endpoint: str, computer_wmi: wmi.WMI
 ) -> None:  # noqa: WPS210
     websocket = await websockets.connect(server_endpoint)
     mac_address = get_computer_mac_address()
     if not await process_registration(mac_address, websocket, computer_wmi):
         exit(1)  # noqa: WPS421
 
-    while True:
+    while lifespan.is_running:
         request = EventInRequest(**json.loads(await websocket.recv()))
         try:
             event_payload: Union[EventPayload, EventErrorResponse] = handle_event(
@@ -53,23 +69,3 @@ async def start_connection(
         response = EventInResponse(event=request.event, payload=event_payload).json()
         logger.bind(payload=response).debug("event response")
         await websocket.send(response)
-
-
-@logger.catch
-async def server_connection_with_retry(
-    server_endpoint: str, computer_wmi: wmi.WMI
-) -> None:
-    while True:
-        try:
-            await start_connection(server_endpoint, computer_wmi)
-        except (websockets.exceptions.ConnectionClosedError, OSError):
-            await asyncio.sleep(settings.reconnect_delay)
-            logger.debug(f"reconnection after {settings.reconnect_delay} seconds")
-
-
-if __name__ == "__main__":
-    asyncio.run(
-        server_connection_with_retry(
-            server_endpoint=settings.server_websocket_url, computer_wmi=wmi.WMI()
-        )
-    )
