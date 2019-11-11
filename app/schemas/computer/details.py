@@ -1,7 +1,7 @@
-from app.schemas.computer.base import BaseComponent
+from app.schemas.computer.base import BaseModelWMI
 
 
-class ComputerSystemModel(BaseComponent):
+class ComputerSystemModel(BaseModelWMI):
     name: str
     username: str
     workgroup: str
@@ -9,7 +9,7 @@ class ComputerSystemModel(BaseComponent):
     part_of_domain: bool
 
 
-class OperatingSystemModel(BaseComponent):
+class OperatingSystemModel(BaseModelWMI):
     caption: str
     version: str
     build_number: str

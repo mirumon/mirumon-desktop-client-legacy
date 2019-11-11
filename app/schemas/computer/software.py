@@ -1,7 +1,7 @@
-from app.schemas.computer.base import BaseComponent
+from app.schemas.computer.base import BaseModelWMI
 
 
-class InstalledProgramModel(BaseComponent):
+class InstalledProgramModel(BaseModelWMI):
     name: str
     vendor: str
     version: str

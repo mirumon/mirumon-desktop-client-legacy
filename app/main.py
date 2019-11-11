@@ -14,7 +14,7 @@ from app.schemas.events.base import (
     EventPayload,
 )
 from app.schemas.status import Status, StatusType
-from app.services import get_computer_details, get_computer_mac_address, handle_event
+from app.services import get_computer_details, handle_event
 
 
 class Lifespan:
@@ -34,11 +34,9 @@ async def server_connection_with_retry(
 
 
 async def process_registration(
-    mac_address: str,
-    websocket: websockets.WebSocketClientProtocol,
-    computer_wmi: wmi.WMI,
+    websocket: websockets.WebSocketClientProtocol, computer_wmi: wmi.WMI
 ) -> bool:
-    computer = get_computer_details(computer_wmi, mac_address).json()
+    computer = get_computer_details(computer_wmi).json()
     logger.bind(payload=computer).debug("process registration")
     await websocket.send(computer)
     auth_response = json.loads(await websocket.recv())
@@ -52,17 +50,14 @@ async def start_connection(
     lifespan: Lifespan, server_endpoint: str, computer_wmi: wmi.WMI
 ) -> None:  # noqa: WPS210
     websocket = await websockets.connect(server_endpoint)
-    mac_address = get_computer_mac_address()
-    if not await process_registration(mac_address, websocket, computer_wmi):
+    if not await process_registration(websocket, computer_wmi):
         exit(1)  # noqa: WPS421
 
     while lifespan.is_running:
         request = EventInRequest(**json.loads(await websocket.recv()))
         try:
             event_payload: Union[EventPayload, EventErrorResponse] = handle_event(
-                event_type=request.event.type,
-                mac_address=mac_address,
-                computer=computer_wmi,
+                event_type=request.event.type, computer=computer_wmi
             )
         except KeyError:
             event_payload = EventErrorResponse(error="event is not supported")

@@ -3,7 +3,7 @@ from typing import List
 from pydantic import BaseModel
 
 from app.schemas.computer.details import OperatingSystemModel
-from app.schemas.computer.users import User
+from app.schemas.computer.users import UserModel
 
 
 class ComputerInList(BaseModel):
@@ -20,5 +20,5 @@ class ComputerDetails(BaseModel):
     name: str
     domain: str
     workgroup: str
-    current_user: User
+    current_user: UserModel
     os: List[OperatingSystemModel]

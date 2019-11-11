@@ -4,32 +4,44 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
+from app.schemas.computer.hardware import (
+    HardwareModel,
+    MotherBoardModel,
+    NetworkAdapterModel,
+    PhysicalDiskModel,
+    ProcessorModel,
+    VideoControllerModel,
+)
 from app.schemas.computer.software import InstalledProgramModel
 from app.schemas.events.computer.details import ComputerDetails, ComputerInList
 
-EventPayload = Union[ComputerInList, ComputerDetails, List[InstalledProgramModel]]
+EventPayload = Union[
+    ComputerInList,
+    ComputerDetails,
+    List[InstalledProgramModel],
+    MotherBoardModel,
+    List[NetworkAdapterModel],
+    List[PhysicalDiskModel],
+    List[ProcessorModel],
+    List[VideoControllerModel],
+    HardwareModel,
+]
 
 
 class EventType(str, Enum):  # noqa: WPS600
     registration: str = "registration"
-    auth: str = "auth"
 
     computers_list: str = "computers-list"
     details: str = "details"
 
-    users: str = "users"
-
-    system: str = "system"
     hardware: str = "hardware"
-    storage: str = "storage"
-    network: str = "network"
-
-    devices: str = "devices"
+    hardware_motherboard: str = "hardware:motherboard"
+    hardware_cpu: str = "hardware:cpu"
+    hardware_gpu: str = "hardware:gpu"
+    hardware_network: str = "hardware:network"
+    hardware_disks: str = "hardware:disks"
 
     installed_programs: str = "installed-programs"
-    startup_programs: str = "startup-programs"
-    services: str = "services"
-    processes: str = "processes"
 
     def __str__(self) -> str:
         return self.value
