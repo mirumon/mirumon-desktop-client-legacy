@@ -64,3 +64,4 @@ async def start_connection(
         response = EventInResponse(event=request.event, payload=event_payload).json()
         logger.bind(payload=response).debug("event response")
         await websocket.send(response)
+    await websocket.close()
