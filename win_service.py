@@ -13,15 +13,25 @@ https://www.thepythoncorner.com/2018/08/how-to-create-a-windows-service-in-pytho
 
 """
 import asyncio
+import logging
 
 import servicemanager
 import win32event
 import win32service
 import win32serviceutil
 import wmi
+from loguru import logger
 
 from app import config
 from app.main import Lifespan, server_connection_with_retry
+
+
+class ServiceHandler(logging.Handler):
+    def emit(self, record: logging.LogRecord) -> None:  # pragma: no cover
+        servicemanager.LogInfoMsg(record.getMessage())
+
+
+logger.add(ServiceHandler())
 
 
 async def start(service):
