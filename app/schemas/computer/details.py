@@ -1,10 +1,12 @@
+from typing import Optional
+
 from app.schemas.computer.base import BaseModelWMI
 
 
 class ComputerSystemModel(BaseModelWMI):
     name: str
     username: str
-    workgroup: str
+    workgroup: Optional[str] = None
     domain: str
     part_of_domain: bool
 
