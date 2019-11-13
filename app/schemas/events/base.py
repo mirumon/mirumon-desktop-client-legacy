@@ -14,6 +14,7 @@ from app.schemas.computer.hardware import (
 )
 from app.schemas.computer.software import InstalledProgramModel
 from app.schemas.events.computer.details import ComputerDetails, ComputerInList
+from app.schemas.events.computer.shutdown import Shutdown
 
 EventPayload = Union[
     ComputerInList,
@@ -25,6 +26,7 @@ EventPayload = Union[
     List[ProcessorModel],
     List[VideoControllerModel],
     HardwareModel,
+    Shutdown,
 ]
 
 
@@ -42,6 +44,8 @@ class EventType(str, Enum):  # noqa: WPS600
     hardware_disks: str = "hardware:disks"
 
     installed_programs: str = "installed-programs"
+
+    shutdown: str = "shutdown"
 
     def __str__(self) -> str:
         return self.value
