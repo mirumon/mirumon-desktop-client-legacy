@@ -28,14 +28,17 @@ async def server_connection_with_retry(
     while lifespan.is_running:
         try:
             await start_connection(lifespan, server_endpoint, computer_wmi)
-        except (websockets.exceptions.ConnectionClosedError, OSError):
+        except (websockets.exceptions.ConnectionClosedError, OSError, RuntimeError):
+            logger.debug(
+                f"will try reconnection after {settings.reconnect_delay} seconds"
+            )
             await asyncio.sleep(settings.reconnect_delay)
-            logger.debug(f"reconnection after {settings.reconnect_delay} seconds")
 
 
 async def process_registration(
     websocket: websockets.WebSocketClientProtocol, computer_wmi: wmi.WMI
 ) -> bool:
+    logger.info("starting registration...")
     computer = get_computer_details(computer_wmi).json()
     logger.bind(payload=computer).debug("process registration")
     await websocket.send(computer)
@@ -49,9 +52,17 @@ async def process_registration(
 async def start_connection(
     lifespan: Lifespan, server_endpoint: str, computer_wmi: wmi.WMI
 ) -> None:  # noqa: WPS210
+    logger.info(f"starting connection to server {server_endpoint}")
     websocket = await websockets.connect(server_endpoint)
-    if not await process_registration(websocket, computer_wmi):
-        exit(1)  # noqa: WPS421
+    try:
+        if not await process_registration(websocket, computer_wmi):
+            exit(1)  # noqa: WPS421
+    except Exception as unknown_error:
+        # fixme
+        #  while windows start service cant get data from wmi for unknown reason
+        #  raising error for reconnecting later when wmi work
+        logger.error(f"unknown error during registration {unknown_error}")
+        raise RuntimeError
 
     while lifespan.is_running:
         request = EventInRequest(**json.loads(await websocket.recv()))
