@@ -4,4 +4,4 @@ from pydantic import BaseModel
 
 
 class Shutdown(BaseModel):
-    shutdown: Optional[str] = "ok"
+    status: str

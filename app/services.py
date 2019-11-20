@@ -132,7 +132,8 @@ def shutdown(computer: wmi.WMI) -> Shutdown:
     logger.info("shutdown...")
     os.Shutdown()
     logger.info("process shutdown")
-    return Shutdown()
+    return Shutdown(status="ok")
+
 
 
 event_handlers: Dict[EventType, Callable[[wmi.WMI], EventPayload]] = {
