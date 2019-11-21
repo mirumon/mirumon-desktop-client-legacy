@@ -9,7 +9,7 @@ class StatusType(str, Enum):  # noqa: WPS600
     auth_success: str = "auth-success"
     auth_failed: str = "auth-failed"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.value
 
 

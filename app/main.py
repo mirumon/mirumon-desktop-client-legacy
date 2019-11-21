@@ -5,16 +5,18 @@ from typing import Union
 import websockets
 import wmi
 from loguru import logger
+from pydantic import ValidationError
 
 from app.config import settings
 from app.schemas.events.base import (
     EventErrorResponse,
     EventInRequest,
     EventInResponse,
-    EventPayload,
+    PayloadInResponse,
 )
 from app.schemas.status import Status, StatusType
-from app.services import get_computer_details, handle_event
+from app.services.events_handlers import handle_event
+from app.services.wmi_api.operating_system import get_computer_details
 
 
 class Lifespan:
@@ -69,8 +71,10 @@ async def start_connection(
         logger.debug(f"event request: {event_req}")
         request = EventInRequest(**event_req)
         try:
-            event_payload: Union[EventPayload, EventErrorResponse] = handle_event(
-                event_type=request.event.type, computer=computer_wmi
+            event_payload: Union[PayloadInResponse, EventErrorResponse] = handle_event(
+                event_type=request.event.type,
+                payload=request.payload,
+                computer=computer_wmi,
             )
         except KeyError:
             event_payload = EventErrorResponse(error="event is not supported")
