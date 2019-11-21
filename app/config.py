@@ -13,7 +13,7 @@ load_dotenv(ENV_PATH)
 
 class Settings(BaseSettings):
     server_websocket_url: str
-    reconnect_delay: int
+    reconnect_delay: int = 10
     debug: bool = False
 
     class Config:  # noqa: WPS431
