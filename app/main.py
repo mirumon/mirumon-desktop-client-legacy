@@ -69,7 +69,12 @@ async def start_connection(
     while lifespan.is_running:
         event_req = json.loads(await websocket.recv())
         logger.debug(f"event request: {event_req}")
-        request = EventInRequest(**event_req)
+        try:
+            request = EventInRequest(**event_req)
+        except ValidationError as request_error:
+            logger.info(f"bad request: {request_error.json()}")
+            continue  # todo error response when backend change events format
+
         try:
             event_payload: Union[PayloadInResponse, EventErrorResponse] = handle_event(
                 event_type=request.event.type,
