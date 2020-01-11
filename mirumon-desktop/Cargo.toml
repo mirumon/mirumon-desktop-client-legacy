@@ -1,0 +1,25 @@
+[package]
+name = "mirumon-desktop"
+description = "Application for communicating with Mirumon backend"
+
+version = "0.0.1"
+
+authors = ["Mirumon Team"]
+
+edition = "2018"
+
+repository = "https://github.com/mirumon/mirumon-desktop-client"
+readme = "README.md"
+license = "MIT"
+
+[dependencies]
+clap = "2.33.0"
+
+lazy_static = "1.4.0"
+
+log = "0.4.8"
+log4rs = "0.9.0"
+
+[target.'cfg(target_os = "windows")'.dependencies]
+mirumon-lib = { path = "../mirumon-windows", package = "mirumon-windows" }
+winlog = "0.2.5"

@@ -1,0 +1,22 @@
+[package]
+name = "mirumon-windows"
+description = "Windows crate for gathering information for Mirumon. Part of Mirumon Desktop"
+
+version = "0.0.1"
+
+authors = ["Mirumon Team"]
+
+edition = "2018"
+
+repository = "https://github.com/mirumon/mirumon-desktop"
+readme = "README.md"
+license = "MIT"
+
+[dependencies]
+wmi = "0.4"
+system_shutdown = "3.0.0"
+mac_address = "1.0.2"
+chrono = "0.4"
+serde = { version = "1.0", features = ["derive"] }
+failure = "0.1.6"
+wake-on-lan = "0.2.0"
