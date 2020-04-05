@@ -5,16 +5,18 @@ from typing import Union
 import websockets
 import wmi
 from loguru import logger
+from pydantic import ValidationError
 
 from app.config import settings
 from app.schemas.events.base import (
     EventErrorResponse,
     EventInRequest,
     EventInResponse,
-    EventPayload,
+    PayloadInResponse,
 )
 from app.schemas.status import Status, StatusType
-from app.services import get_computer_details, handle_event
+from app.services.events_handlers import handle_event
+from app.services.wmi_api.operating_system import get_computer_details
 
 
 class Lifespan:
@@ -67,10 +69,17 @@ async def start_connection(
     while lifespan.is_running:
         event_req = json.loads(await websocket.recv())
         logger.debug(f"event request: {event_req}")
-        request = EventInRequest(**event_req)
         try:
-            event_payload: Union[EventPayload, EventErrorResponse] = handle_event(
-                event_type=request.event.type, computer=computer_wmi
+            request = EventInRequest(**event_req)
+        except ValidationError as request_error:
+            logger.info(f"bad request: {request_error.json()}")
+            continue  # todo error response when backend change events format
+
+        try:
+            event_payload: Union[PayloadInResponse, EventErrorResponse] = handle_event(
+                event_type=request.event.type,
+                payload=request.payload,
+                computer=computer_wmi,
             )
         except KeyError:
             event_payload = EventErrorResponse(error="event is not supported")

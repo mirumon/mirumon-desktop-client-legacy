@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Union
+from typing import List, Optional, Union
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -14,20 +14,8 @@ from app.schemas.computer.hardware import (
 )
 from app.schemas.computer.software import InstalledProgramModel
 from app.schemas.events.computer.details import ComputerDetails, ComputerInList
+from app.schemas.events.computer.execute import ExecuteCommand, ExecuteResult
 from app.schemas.events.computer.shutdown import Shutdown
-
-EventPayload = Union[
-    ComputerInList,
-    ComputerDetails,
-    List[InstalledProgramModel],
-    MotherBoardModel,
-    List[NetworkAdapterModel],
-    List[PhysicalDiskModel],
-    List[ProcessorModel],
-    List[VideoControllerModel],
-    HardwareModel,
-    Shutdown,
-]
 
 
 class EventType(str, Enum):  # noqa: WPS600
@@ -47,8 +35,28 @@ class EventType(str, Enum):  # noqa: WPS600
 
     shutdown: str = "shutdown"
 
+    execute: str = "execute"
+
     def __str__(self) -> str:
         return self.value
+
+
+PayloadInRequest = Optional[Union[ExecuteCommand]]
+
+PayloadInResponse = Union[
+    ComputerInList,
+    ComputerDetails,
+    List[InstalledProgramModel],
+    MotherBoardModel,
+    List[NetworkAdapterModel],
+    List[PhysicalDiskModel],
+    List[ProcessorModel],
+    List[VideoControllerModel],
+    HardwareModel,
+    Shutdown,
+    ExecuteCommand,
+    ExecuteResult,
+]
 
 
 class Event(BaseModel):
@@ -58,11 +66,12 @@ class Event(BaseModel):
 
 class EventInRequest(BaseModel):
     event: Event
+    payload: PayloadInRequest
 
 
 class EventInResponse(BaseModel):
     event: Event
-    payload: EventPayload
+    payload: PayloadInResponse
 
 
 class EventErrorResponse(BaseModel):
