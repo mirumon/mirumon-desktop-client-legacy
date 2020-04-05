@@ -14,7 +14,7 @@ from app.schemas.events.base import (
     EventPayload,
 )
 from app.schemas.status import Status, StatusType
-from app.services import get_computer_details, get_computer_mac_address, handle_event
+from app.services import get_computer_details, handle_event
 
 
 class Lifespan:
@@ -28,17 +28,18 @@ async def server_connection_with_retry(
     while lifespan.is_running:
         try:
             await start_connection(lifespan, server_endpoint, computer_wmi)
-        except (websockets.exceptions.ConnectionClosedError, OSError):
+        except (websockets.exceptions.ConnectionClosedError, OSError, RuntimeError):
+            logger.debug(
+                f"will try reconnection after {settings.reconnect_delay} seconds"
+            )
             await asyncio.sleep(settings.reconnect_delay)
-            logger.debug(f"reconnection after {settings.reconnect_delay} seconds")
 
 
 async def process_registration(
-    mac_address: str,
-    websocket: websockets.WebSocketClientProtocol,
-    computer_wmi: wmi.WMI,
+    websocket: websockets.WebSocketClientProtocol, computer_wmi: wmi.WMI
 ) -> bool:
-    computer = get_computer_details(computer_wmi, mac_address).json()
+    logger.info("starting registration...")
+    computer = get_computer_details(computer_wmi).json()
     logger.bind(payload=computer).debug("process registration")
     await websocket.send(computer)
     auth_response = json.loads(await websocket.recv())
@@ -51,21 +52,27 @@ async def process_registration(
 async def start_connection(
     lifespan: Lifespan, server_endpoint: str, computer_wmi: wmi.WMI
 ) -> None:  # noqa: WPS210
+    logger.info(f"starting connection to server {server_endpoint}")
     websocket = await websockets.connect(server_endpoint)
-    mac_address = get_computer_mac_address()
-    if not await process_registration(mac_address, websocket, computer_wmi):
-        exit(1)  # noqa: WPS421
+    try:
+        if not await process_registration(websocket, computer_wmi):
+            exit(1)  # noqa: WPS421
+    except Exception as unknown_error:
+        # fixme
+        #  while windows start service cant get data from wmi for unknown reason
+        #  raising error for reconnecting later when wmi work
+        logger.error(f"unknown error during registration {unknown_error}")
+        raise RuntimeError
 
     while lifespan.is_running:
         request = EventInRequest(**json.loads(await websocket.recv()))
         try:
             event_payload: Union[EventPayload, EventErrorResponse] = handle_event(
-                event_type=request.event.type,
-                mac_address=mac_address,
-                computer=computer_wmi,
+                event_type=request.event.type, computer=computer_wmi
             )
         except KeyError:
             event_payload = EventErrorResponse(error="event is not supported")
         response = EventInResponse(event=request.event, payload=event_payload).json()
         logger.bind(payload=response).debug("event response")
         await websocket.send(response)
+    await websocket.close()

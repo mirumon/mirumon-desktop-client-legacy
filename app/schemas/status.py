@@ -9,6 +9,9 @@ class StatusType(str, Enum):  # noqa: WPS600
     auth_success: str = "auth-success"
     auth_failed: str = "auth-failed"
 
+    def __str__(self):
+        return self.value
+
 
 class Status(BaseModel):
     status: StatusType
