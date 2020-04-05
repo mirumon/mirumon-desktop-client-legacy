@@ -6,7 +6,7 @@ authors = ["Slyfoxy <khitrov34@gmail.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "3.7"
 wmi = "^1.4"
 pypiwin32 = "^223.0"
 pydantic = "^1.0"
