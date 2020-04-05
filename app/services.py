@@ -17,6 +17,7 @@ from app.schemas.computer.software import InstalledProgramModel
 from app.schemas.computer.users import LogonType, UserModel
 from app.schemas.events.base import EventPayload, EventType
 from app.schemas.events.computer.details import ComputerDetails, ComputerInList
+from app.schemas.events.computer.shutdown import Shutdown
 
 
 def get_computer_mac_address() -> str:
@@ -126,6 +127,15 @@ def get_hardware(computer: wmi.WMI) -> HardwareModel:
     )
 
 
+def shutdown(computer: wmi.WMI) -> Shutdown:
+    os = computer.Win32_OperatingSystem(Primary=1)[0]
+    logger.info("shutdown...")
+    os.Shutdown()
+    logger.info("process shutdown")
+    return Shutdown(status="ok")
+
+
+
 event_handlers: Dict[EventType, Callable[[wmi.WMI], EventPayload]] = {
     EventType.details: get_computer_details,
     EventType.computers_list: get_computer_in_list,
@@ -136,4 +146,5 @@ event_handlers: Dict[EventType, Callable[[wmi.WMI], EventPayload]] = {
     EventType.hardware_disks: get_physical_disks,
     EventType.hardware_network: get_network_adapters,
     EventType.hardware: get_hardware,
+    EventType.shutdown: shutdown,
 }

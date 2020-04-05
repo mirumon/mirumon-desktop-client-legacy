@@ -39,7 +39,7 @@ async def start(service):
         server_connection_with_retry(
             service.lifespan,
             config.settings.server_websocket_url,
-            wmi.WMI()
+            wmi.WMI(privileges=["Shutdown", "RemoteShutdown"])
         )
     )
     await service.event.wait()

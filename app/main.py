@@ -65,7 +65,9 @@ async def start_connection(
         raise RuntimeError
 
     while lifespan.is_running:
-        request = EventInRequest(**json.loads(await websocket.recv()))
+        event_req = json.loads(await websocket.recv())
+        logger.debug(f"event request: {event_req}")
+        request = EventInRequest(**event_req)
         try:
             event_payload: Union[EventPayload, EventErrorResponse] = handle_event(
                 event_type=request.event.type, computer=computer_wmi
@@ -73,6 +75,6 @@ async def start_connection(
         except KeyError:
             event_payload = EventErrorResponse(error="event is not supported")
         response = EventInResponse(event=request.event, payload=event_payload).json()
-        logger.bind(payload=response).debug("event response")
+        logger.bind(payload=response).debug(f"event response: {response}")
         await websocket.send(response)
     await websocket.close()
