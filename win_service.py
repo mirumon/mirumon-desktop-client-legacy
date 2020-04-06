@@ -8,6 +8,11 @@ python.exe .\win_service.py start
 NET START MirumonService
 
 http://thepythoncorner.com/dev/how-to-create-a-windows-service-in-python/
+
+
+nuitka compile:
+python -m nuitka --standalone --windows-dependency-tool=pefile --experimental=use_pefile_recurse --experimental=use_pefile_fullrecurse --follow-imports  --mingw64 --show-progress  --python-arch=x86_64 --include-module=win32timezone win_service.py
+
 """
 
 import os, sys, site
@@ -54,15 +59,9 @@ import logging
 import servicemanager
 import win32event
 import win32service
-print(1)
-for k,v in os.environ.items():
-    print(k,v)
-
-print(os.getcwd())
 from loguru import logger
 import win32serviceutil
 import wmi
-
 from app import config
 from app.main import Lifespan, server_connection_with_retry
 

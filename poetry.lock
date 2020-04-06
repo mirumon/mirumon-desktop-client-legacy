@@ -652,6 +652,18 @@ python-versions = "*"
 version = "0.4.3"
 
 [[package]]
+category = "main"
+description = "Python compiler with full language support and CPython compatibility"
+name = "Nuitka"
+optional = false
+python-versions = "*"
+version = "0.6.8rc5"
+
+[package.source]
+reference = "09ea153bd33293c622cda6fe44c06f970fe82886"
+type = "git"
+url = "https://github.com/Nuitka/Nuitka"
+[[package]]
 category = "dev"
 description = "Core utilities for Python packages"
 name = "packaging"
@@ -1057,7 +1069,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "3822262122088d1e34cad16fa9b865410ef6d9d6b4e96279a31f0b3a4462e04a"
+content-hash = "a1d475e4f9c544e72cc5f72806408abfaff0ecf53bc8df6a65d821f662ba89bb"
 python-versions = "3.7"
 
 [metadata.files]
@@ -1321,6 +1333,7 @@ mypy-extensions = [
     {file = "mypy_extensions-0.4.3-py2.py3-none-any.whl", hash = "sha256:090fedd75945a69ae91ce1303b5824f428daf5a028d2f6ab8a299250a846f15d"},
     {file = "mypy_extensions-0.4.3.tar.gz", hash = "sha256:2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8"},
 ]
+Nuitka = []
 packaging = [
     {file = "packaging-20.3-py2.py3-none-any.whl", hash = "sha256:82f77b9bee21c1bafbf35a84905d604d5d1223801d639cf3ed140bd651c08752"},
     {file = "packaging-20.3.tar.gz", hash = "sha256:3c292b474fda1671ec57d46d739d072bfd495a4f51ad01a055121d81e952b7a3"},
