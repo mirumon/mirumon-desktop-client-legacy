@@ -142,7 +142,7 @@ python-versions = "*"
 version = "3.0.4"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "Composable command line interface toolkit"
 name = "click"
 optional = false
@@ -663,6 +663,7 @@ version = "0.6.8rc5"
 reference = "09ea153bd33293c622cda6fe44c06f970fe82886"
 type = "git"
 url = "https://github.com/Nuitka/Nuitka"
+
 [[package]]
 category = "dev"
 description = "Core utilities for Python packages"
@@ -903,6 +904,14 @@ version = "1.3.2"
 idna2008 = ["idna"]
 
 [[package]]
+category = "main"
+description = "Tool to Detect Surrounding Shell"
+name = "shellingham"
+optional = false
+python-versions = "!=3.0,!=3.1,!=3.2,!=3.3,>=2.6"
+version = "1.3.2"
+
+[[package]]
 category = "dev"
 description = "Python 2 and 3 compatibility utilities"
 name = "six"
@@ -974,6 +983,31 @@ name = "typed-ast"
 optional = false
 python-versions = "*"
 version = "1.4.1"
+
+[[package]]
+category = "main"
+description = "Typer, build great CLIs. Easy to code. Based on Python type hints."
+name = "typer"
+optional = false
+python-versions = ">=3.6"
+version = "0.1.1"
+
+[package.dependencies]
+click = ">=7.1.1,<7.2.0"
+
+[package.dependencies.colorama]
+optional = true
+version = "*"
+
+[package.dependencies.shellingham]
+optional = true
+version = "*"
+
+[package.extras]
+all = ["colorama", "shellingham"]
+dev = ["autoflake", "flake8"]
+doc = ["mkdocs", "mkdocs-material", "markdown-include"]
+test = ["shellingham", "pytest (>=4.4.0)", "pytest-cov", "coverage", "pytest-xdist", "pytest-sugar", "mypy", "black", "isort"]
 
 [[package]]
 category = "dev"
@@ -1069,7 +1103,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "a1d475e4f9c544e72cc5f72806408abfaff0ecf53bc8df6a65d821f662ba89bb"
+content-hash = "3869b635df2abbd4b7bf78fcd751ec0dd85b4fc8892a7e300eafcfb633b2fdae"
 python-versions = "3.7"
 
 [metadata.files]
@@ -1448,6 +1482,10 @@ rfc3986 = [
     {file = "rfc3986-1.3.2-py2.py3-none-any.whl", hash = "sha256:df4eba676077cefb86450c8f60121b9ae04b94f65f85b69f3f731af0516b7b18"},
     {file = "rfc3986-1.3.2.tar.gz", hash = "sha256:0344d0bd428126ce554e7ca2b61787b6a28d2bbd19fc70ed2dd85efe31176405"},
 ]
+shellingham = [
+    {file = "shellingham-1.3.2-py2.py3-none-any.whl", hash = "sha256:7f6206ae169dc1a03af8a138681b3f962ae61cc93ade84d0585cca3aaf770044"},
+    {file = "shellingham-1.3.2.tar.gz", hash = "sha256:576c1982bea0ba82fb46c36feb951319d7f42214a82634233f58b40d858a751e"},
+]
 six = [
     {file = "six-1.14.0-py2.py3-none-any.whl", hash = "sha256:8f3cd2e254d8f793e7f3d6d9df77b92252b52637291d0f0da013c76ea2724b6c"},
     {file = "six-1.14.0.tar.gz", hash = "sha256:236bdbdce46e6e6a3d61a337c0f8b763ca1e8717c03b369e87a7ec7ce1319c0a"},
@@ -1499,6 +1537,10 @@ typed-ast = [
     {file = "typed_ast-1.4.1-cp38-cp38-win_amd64.whl", hash = "sha256:fc0fea399acb12edbf8a628ba8d2312f583bdbdb3335635db062fa98cf71fca4"},
     {file = "typed_ast-1.4.1-cp39-cp39-macosx_10_15_x86_64.whl", hash = "sha256:d43943ef777f9a1c42bf4e552ba23ac77a6351de620aa9acf64ad54933ad4d34"},
     {file = "typed_ast-1.4.1.tar.gz", hash = "sha256:8c8aaad94455178e3187ab22c8b01a3837f8ee50e09cf31f1ba129eb293ec30b"},
+]
+typer = [
+    {file = "typer-0.1.1-py3-none-any.whl", hash = "sha256:e6fdb492c2f20d2d8123b8b2f4efa060770f92664aad8d36126f53dce501e9a8"},
+    {file = "typer-0.1.1.tar.gz", hash = "sha256:180d746de86724f9f94e90fa95caa065b5af9b3b3c77fc9d4d4ca1b75adc0c01"},
 ]
 typing-extensions = [
     {file = "typing_extensions-3.7.4.2-py2-none-any.whl", hash = "sha256:f8d2bd89d25bc39dabe7d23df520442fa1d8969b82544370e03d88b5a591c392"},
