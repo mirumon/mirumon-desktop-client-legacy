@@ -1,12 +1,12 @@
-import asyncio
 import json
-from typing import Union
+from typing import Union, Any
 
 import websockets
 import wmi
 from loguru import logger
 from pydantic import ValidationError
 
+from app import config
 from app.config import settings
 from app.schemas.events.base import (
     EventErrorResponse,
@@ -19,26 +19,25 @@ from app.services.events_handlers import handle_event
 from app.services.wmi_api.operating_system import get_computer_details
 
 
-class Lifespan:
-    is_running: bool = True
-
-
 @logger.catch
 async def server_connection_with_retry(
-    lifespan: Lifespan, server_endpoint: str, computer_wmi: wmi.WMI
+        server_endpoint: str, computer_wmi: wmi.WMI
 ) -> None:
-    while lifespan.is_running:
-        try:
-            await start_connection(lifespan, server_endpoint, computer_wmi)
-        except (websockets.exceptions.ConnectionClosedError, OSError, RuntimeError):
-            logger.debug(
-                f"will try reconnection after {settings.reconnect_delay} seconds"
-            )
-            await asyncio.sleep(settings.reconnect_delay)
+    try:
+        while True:
+            try:
+                await start_connection(server_endpoint, computer_wmi)
+            except (websockets.exceptions.ConnectionClosedError, OSError, RuntimeError):
+                logger.debug(
+                    f"will try reconnection after {settings.reconnect_delay} seconds"
+                )
+                await asyncio.sleep(settings.reconnect_delay)
+    except asyncio.CancelledError:
+        logger.debug("catch CancelledError during shutdown")
 
 
 async def process_registration(
-    websocket: websockets.WebSocketClientProtocol, computer_wmi: wmi.WMI
+        websocket: websockets.WebSocketClientProtocol, computer_wmi: wmi.WMI
 ) -> bool:
     logger.info("starting registration...")
     computer = get_computer_details(computer_wmi).json()
@@ -52,7 +51,7 @@ async def process_registration(
 
 
 async def start_connection(
-    lifespan: Lifespan, server_endpoint: str, computer_wmi: wmi.WMI
+        server_endpoint: str, computer_wmi: wmi.WMI
 ) -> None:  # noqa: WPS210
     logger.info(f"starting connection to server {server_endpoint}")
     websocket = await websockets.connect(server_endpoint)
@@ -66,8 +65,9 @@ async def start_connection(
         logger.error(f"unknown error during registration {unknown_error}")
         raise RuntimeError
 
-    while lifespan.is_running:
-        event_req = json.loads(await websocket.recv())
+    while True:
+        p = await websocket.recv()
+        event_req = json.loads(p)
         logger.debug(f"event request: {event_req}")
         try:
             request = EventInRequest(**event_req)
@@ -87,3 +87,31 @@ async def start_connection(
         logger.bind(payload=response).debug(f"event response: {response}")
         await websocket.send(response)
     await websocket.close()
+
+
+import asyncio
+import signal
+
+
+class GracefulExit(SystemExit):
+    code = 1
+
+
+def raise_graceful_exit(*args: Any):
+    loop.stop()
+    logger.info("shutdown service...")
+    raise GracefulExit()
+
+
+if __name__ == "__main__":
+    loop = asyncio.get_event_loop()
+    signal.signal(signal.SIGINT, raise_graceful_exit)
+    signal.signal(signal.SIGTERM, raise_graceful_exit)
+
+    try:
+        asyncio.run(server_connection_with_retry(
+            config.settings.server_websocket_url,
+            wmi.WMI(privileges=["Shutdown", "RemoteShutdown"])
+        ))
+    finally:
+        loop.close()
