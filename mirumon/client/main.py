@@ -9,17 +9,17 @@ import wmi
 from loguru import logger
 from pydantic import ValidationError
 
-from app import config
-from app.config import settings
-from app.schemas.events.base import (
+from mirumon import config
+from mirumon.config import settings
+from mirumon.schemas.events.base import (
     EventErrorResponse,
     EventInRequest,
     EventInResponse,
     PayloadInResponse,
 )
-from app.schemas.status import Status, StatusType
-from app.services.events_handlers import handle_event
-from app.services.wmi_api.operating_system import get_computer_details
+from mirumon.schemas.status import Status, StatusType
+from mirumon.services.events_handlers import handle_event
+from mirumon.services.wmi_api.operating_system import get_computer_details
 
 
 @logger.catch
@@ -119,81 +119,3 @@ def run_service():
         ))
     finally:
         loop.close()
-
-app = typer.Typer()
-nssm = "nssm"
-service_name = "mirumon"
-
-
-@app.command()
-def run(token: str, server: str, reconnect_delay: int = 10, reconnect_attempts: int = 10):
-    pwd = os.getcwd()
-    logs_dir = os.path.join(pwd, "logs")
-    Path(logs_dir).mkdir(exist_ok=True)
-    message = "\n".join([
-        "Start service with current config",
-        f"token: {token}",
-        f"server: {server}",
-        f"reconnect delay: {reconnect_delay}",
-        f"reconnect attempts: {reconnect_attempts}",
-    ]
-    )
-    typer.echo(message)
-    run_service()
-
-
-
-@app.command()
-def start():
-    os.system(f"nssm start {service_name}")
-
-
-@app.command()
-def install(token: str, server: str, reconnect_delay: int = 10, reconnect_attempts: int = 10):
-    message = "\n".join([
-        "`install`",
-        f"token: {token}",
-        f"server: {server}",
-        f"reconnect delay: {reconnect_delay}",
-        f"reconnect attempts: {reconnect_attempts}",
-    ]
-    )
-    typer.echo(message)
-
-    pwd = os.getcwd()
-    executable_path = os.path.join(pwd, f"{service_name}.exe")
-    logs_dir = os.path.join(pwd, "logs")
-    Path(logs_dir).mkdir(exist_ok=True)
-
-    stdout_path = os.path.join(logs_dir, "stdout.log")
-    stderr_path = os.path.join(logs_dir, "stderr.log")
-
-    os.system(f"nssm install {service_name} {executable_path}")
-    os.system(f"nssm set {service_name} Application {executable_path}")
-    os.system(f"nssm set {service_name} AppParameters run {token} {server} --reconnect-delay {reconnect_delay} --reconnect-attempts {reconnect_attempts}")
-    os.system(f"nssm set {service_name} AppStdout {stdout_path}")
-    os.system(f"nssm set {service_name} AppStderr {stderr_path}")
-    os.system(f"nssm set {service_name} AppExit Default Restart")
-    os.system(f"nssm set {service_name} AppRestartDelay 0")
-
-    os.system(f"nssm set {service_name} DependOnService MpsSvc")
-    os.system(f"nssm set {service_name} DependOnService winmgmt")
-
-
-@app.command()
-def remove():
-    os.system(f"nssm remove {service_name} confirm")
-
-
-@app.command()
-def stop():
-    os.system(f"nssm stop {service_name}")
-
-
-@app.command()
-def restart():
-    os.system(f"nssm restart {service_name}")
-
-
-if __name__ == "__main__":
-    app()

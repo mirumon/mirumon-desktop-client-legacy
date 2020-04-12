@@ -1,6 +1,6 @@
 from typing import Optional
 
-from app.schemas.computer.base import BaseModelWMI
+from mirumon.schemas.computer.base import BaseModelWMI
 
 
 class ComputerSystemModel(BaseModelWMI):

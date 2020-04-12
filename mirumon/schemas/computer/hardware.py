@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
-from app.schemas.computer.base import BaseModelWMI
+from mirumon.schemas.computer.base import BaseModelWMI
 
 
 class MotherBoardModel(BaseModelWMI):

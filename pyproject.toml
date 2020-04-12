@@ -2,27 +2,46 @@
 name = "mirumon-desktop-client"
 version = "0.0.1"
 description = "Windows monitoring client"
-authors = ["Slyfoxy <khitrov34@gmail.com>"]
+
+authors = ["Mirumon Team"]
+repository = "https://github.com/mirumon/mirumon-descktop-client"
+
+readme = "README.md"
 license = "MIT"
 
+packages = [
+  { include = "mirumon" }
+]
+
+
+[tool.poetry.scripts]
+mirumon = "mirumon.cli.main:cli"
+
+
 [tool.poetry.dependencies]
-python = "3.7"
-wmi = "^1.4"
-pypiwin32 = "^223.0"
-pydantic = "^1.0"
+# TODO: update to 3.8 after releasing support in nuitka
+python = "~3.7"
+
+# core
+pydantic = { version = "^1.0", extras = ["dotenv"] }
 websockets = "^8.0"
-python-dotenv = "^0.10.3"
 loguru = "^0.3.2"
-nuitka = {git="https://github.com/Nuitka/Nuitka", rev="09ea153"}
-typer = {extras = ["all"], version = "^0.1.1"}
+
+# windows dependencies
+mirumon_windows = { path = "./mirumon/windows", markers = "sys_platform == 'win32'" }
+
+# for cli
+typer = { version = "^0.1.1", extras = ["all"] }
+
 
 [tool.poetry.dev-dependencies]
 black = "19.3b0"
 isort = "^4.3"
 autoflake = "^1.3"
 
-wemake-python-styleguide = "^0.12.5"
-mypy = "^0.730.0"
+mypy = "^0.770"
+wemake-python-styleguide = "^0.14.0"
+flake8-fixme = "^1.1"
 
 pytest = "^5.2"
 pytest-asyncio = "^0.10.0"
@@ -30,11 +49,10 @@ pytest-cov = "^2.8"
 
 httpx = "^0.7.5"
 asgi-lifespan = "^0.4.2"
-flake8-fixme = "^1.1"
 
 
 [tool.black]
-target_version = ['py36', 'py37', 'py38']
+target_version = ['py37']
 include = '\.pyi?$'
 exclude = '''
 /(\.git/
@@ -60,6 +78,7 @@ exclude = '''
 )/
 '''
 
+
 [build-system]
-requires = ["poetry>=0.12"]
+requires = ["poetry>=1.0"]
 build-backend = "poetry.masonry.api"
