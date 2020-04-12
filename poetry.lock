@@ -658,11 +658,6 @@ optional = false
 python-versions = ">=3.6"
 version = "1.4"
 
-[package.dependencies]
-[package.dependencies.python-dotenv]
-optional = true
-version = ">=0.10.4"
-
 [package.extras]
 dotenv = ["python-dotenv (>=0.10.4)"]
 email = ["email-validator (>=1.0.3)"]
@@ -769,17 +764,6 @@ pytest = ">=3.6"
 
 [package.extras]
 testing = ["fields", "hunter", "process-tests (2.0.2)", "six", "virtualenv"]
-
-[[package]]
-category = "main"
-description = "Add .env support to your django/flask apps in development and deployments"
-name = "python-dotenv"
-optional = false
-python-versions = "*"
-version = "0.12.0"
-
-[package.extras]
-cli = ["click (>=5.0)"]
 
 [[package]]
 category = "main"
@@ -1018,7 +1002,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "1574aa5c8139555259a1f256f14a1548caa062b829a9dd70813e7abf55add4d9"
+content-hash = "056b0f93753713befe524200dff019520bd38ce3fb70884a93e6bcfb76485e5c"
 python-versions = "~3.7"
 
 [metadata.files]
@@ -1329,10 +1313,6 @@ pytest-asyncio = [
 pytest-cov = [
     {file = "pytest-cov-2.8.1.tar.gz", hash = "sha256:cc6742d8bac45070217169f5f72ceee1e0e55b0221f54bcf24845972d3a47f2b"},
     {file = "pytest_cov-2.8.1-py2.py3-none-any.whl", hash = "sha256:cdbdef4f870408ebdbfeb44e63e07eb18bb4619fae852f6e760645fa36172626"},
-]
-python-dotenv = [
-    {file = "python-dotenv-0.12.0.tar.gz", hash = "sha256:92b3123fb2d58a284f76cc92bfe4ee6c502c32ded73e8b051c4f6afc8b6751ed"},
-    {file = "python_dotenv-0.12.0-py2.py3-none-any.whl", hash = "sha256:81822227f771e0cab235a2939f0f265954ac4763cafd806d845801c863bf372f"},
 ]
 pywin32 = [
     {file = "pywin32-227-cp27-cp27m-win32.whl", hash = "sha256:371fcc39416d736401f0274dd64c2302728c9e034808e37381b5e1b22be4a6b0"},
