@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "mirumon_windows"
+name = "mirumon-windows"
 version = "0.0.1"
 description = "Exporters for computer data from Windows"
 authors = ["Mirumon Team"]

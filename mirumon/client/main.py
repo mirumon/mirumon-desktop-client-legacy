@@ -1,16 +1,13 @@
+import asyncio
 import json
-import os
-from pathlib import Path
-from typing import Union, Any
+from typing import Union
 
-import typer
 import websockets
 import wmi
 from loguru import logger
 from pydantic import ValidationError
 
-from mirumon import config
-from mirumon.config import settings
+from mirumon.config import Config, init_wmi
 from mirumon.schemas.events.base import (
     EventErrorResponse,
     EventInRequest,
@@ -23,24 +20,23 @@ from mirumon.services.wmi_api.operating_system import get_computer_details
 
 
 @logger.catch
-async def server_connection_with_retry(
-        server_endpoint: str, computer_wmi: wmi.WMI
-) -> None:
+async def server_connection_with_retry(config: Config) -> None:
     try:
+        device_wmi = init_wmi(config)
         while True:
             try:
-                await start_connection(server_endpoint, computer_wmi)
+                await start_connection(config.server, device_wmi)
             except (websockets.exceptions.ConnectionClosedError, OSError, RuntimeError):
                 logger.debug(
-                    f"will try reconnection after {settings.reconnect_delay} seconds"
+                    f"will try reconnection after {config.reconnect_delay} seconds"
                 )
-                await asyncio.sleep(settings.reconnect_delay)
+                await asyncio.sleep(config.reconnect_delay)
     except asyncio.CancelledError:
         logger.debug("catch CancelledError during shutdown")
 
 
 async def process_registration(
-        websocket: websockets.WebSocketClientProtocol, computer_wmi: wmi.WMI
+    websocket: websockets.WebSocketClientProtocol, computer_wmi: wmi.WMI
 ) -> bool:
     logger.info("starting registration...")
     computer = get_computer_details(computer_wmi).json()
@@ -54,7 +50,7 @@ async def process_registration(
 
 
 async def start_connection(
-        server_endpoint: str, computer_wmi: wmi.WMI
+    server_endpoint: str, computer_wmi: wmi.WMI
 ) -> None:  # noqa: WPS210
     logger.info(f"starting connection to server {server_endpoint}")
     websocket = await websockets.connect(server_endpoint)
@@ -92,30 +88,10 @@ async def start_connection(
     await websocket.close()
 
 
-import asyncio
-import signal
-
-
-class GracefulExit(SystemExit):
-    code = 1
-
-
-def raise_graceful_exit(*args: Any):
-    loop.stop()
-    logger.info("shutdown service...")
-    raise GracefulExit()
-
-loop = asyncio.get_event_loop()
-
-
-def run_service():
-    signal.signal(signal.SIGINT, raise_graceful_exit)
-    signal.signal(signal.SIGTERM, raise_graceful_exit)
-
+def run_service(config: Config) -> None:
+    loop = asyncio.get_event_loop()
     try:
-        asyncio.run(server_connection_with_retry(
-            config.settings.server_websocket_url,
-            wmi.WMI(privileges=["Shutdown", "RemoteShutdown"])
-        ))
+        task = server_connection_with_retry(config)
+        asyncio.run(task)
     finally:
         loop.close()
