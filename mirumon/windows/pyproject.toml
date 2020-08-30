@@ -6,11 +6,11 @@ authors = ["Mirumon Team"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "~3.7"
+python = "~3.8"
 
 wmi = "^1.4"
 pypiwin32 = "^223.0"
-nuitka = { git = "https://github.com/Nuitka/Nuitka", rev="09ea153" }
+nuitka = { git = "https://github.com/Nuitka/Nuitka", rev="e5bb9cc"}
 
 [tool.poetry.dev-dependencies]
 

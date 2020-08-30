@@ -19,8 +19,7 @@ mirumon = "mirumon.cli.mirumon:cli"
 
 
 [tool.poetry.dependencies]
-# TODO: update to 3.8 after releasing support in nuitka
-python = "~3.7"
+python = "3.8"
 
 # core
 pydantic = "^1.0"
