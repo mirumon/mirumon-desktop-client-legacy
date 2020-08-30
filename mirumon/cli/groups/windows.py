@@ -20,7 +20,6 @@ def start() -> None:
 @group.command()
 def install(
     server: str,
-    server_token: str,
     device_token: str,
     reconnect_delay: int = DEFAULT_DELAY,
     reconnect_attempts: int = DEFAULT_ATTEMPTS,
@@ -40,7 +39,6 @@ def install(
         stderr_path=stderr_path,
         # client config
         server=server,
-        server_token=server_token,
         device_token=device_token,
         reconnect_delay=reconnect_delay,
         reconnect_attempts=reconnect_attempts,
@@ -73,13 +71,13 @@ def nssm_service_setup_commands(
     stdout_path: pathlib.Path,
     stderr_path: pathlib.Path,
     server: str,
-    server_token: str,
     device_token: str,
     reconnect_delay: int,
     reconnect_attempts: int,
     allow_shutdown: bool,
     debug: bool,
 ) -> list:
+    print(executable_path)
     return [
         [NSSM_PATH, "install", SERVICE_NAME, executable_path],
         [NSSM_PATH, "set", SERVICE_NAME, "Application", executable_path],
@@ -90,8 +88,6 @@ def nssm_service_setup_commands(
             "AppParamters",
             "run",
             server,
-            "--server-token",
-            server_token,
             "--device-token",
             device_token,
             "--reconnect-delay",

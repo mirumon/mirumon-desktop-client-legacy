@@ -15,7 +15,6 @@ DEFAULT_ATTEMPTS = 10
 @group.command(hidden=True)
 def run(
     server: str,
-    server_token: str,
     device_token: Optional[str] = None,
     reconnect_delay: int = DEFAULT_DELAY,
     reconnect_attempts: int = DEFAULT_ATTEMPTS,
@@ -25,7 +24,6 @@ def run(
     create_logs_dir()
     config = Config(
         server=server,
-        server_token=server_token,
         device_token=device_token,
         reconnect_delay=reconnect_delay,
         reconnect_attempts=reconnect_attempts,

@@ -5,17 +5,16 @@ from typing import Any, Optional
 
 import wmi
 from loguru import logger
-from pydantic import BaseModel
+from pydantic import BaseModel, AnyUrl
 
 
 class Config(BaseModel):
-    server: str
-    server_token: str
-    device_token: Optional[str]
-    reconnect_delay: int
-    reconnect_attempts: int
-    allow_shutdown: bool
-    debug: bool
+    server: AnyUrl
+    device_token: str
+    reconnect_delay: int = 10
+    reconnect_attempts: int = 7
+    allow_shutdown: bool = False
+    debug: bool = False
 
 
 class GracefulExit(SystemExit):

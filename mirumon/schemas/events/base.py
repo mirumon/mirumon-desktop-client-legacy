@@ -19,10 +19,8 @@ from mirumon.schemas.events.computer.shutdown import Shutdown
 
 
 class EventType(str, Enum):  # noqa: WPS600
-    registration: str = "registration"
-
-    computers_list: str = "computers-list"
-    details: str = "details"
+    computers_list: str = "list"
+    details: str = "detail"
 
     hardware: str = "hardware"
     hardware_motherboard: str = "hardware:motherboard"
@@ -31,7 +29,7 @@ class EventType(str, Enum):  # noqa: WPS600
     hardware_network: str = "hardware:network"
     hardware_disks: str = "hardware:disks"
 
-    installed_programs: str = "installed-programs"
+    installed_programs: str = "software"
 
     shutdown: str = "shutdown"
 
@@ -40,8 +38,6 @@ class EventType(str, Enum):  # noqa: WPS600
     def __str__(self) -> str:
         return self.value
 
-
-PayloadInRequest = Optional[Union[ExecuteCommand]]
 
 PayloadInResponse = Union[
     ComputerInList,
@@ -65,14 +61,13 @@ class Event(BaseModel):
 
 
 class EventInRequest(BaseModel):
-    event: Event
-    payload: PayloadInRequest
+    sync_id: UUID
+    method: EventType
+    params: dict
 
 
 class EventInResponse(BaseModel):
-    event: Event
-    payload: PayloadInResponse
-
-
-class EventErrorResponse(BaseModel):
-    error: str
+    sync_id: UUID
+    method: EventType    
+    result: PayloadInResponse
+    error: Optional[dict]

@@ -9,7 +9,6 @@ from pydantic import ValidationError
 
 from mirumon.config import Config, init_wmi
 from mirumon.schemas.events.base import (
-    EventErrorResponse,
     EventInRequest,
     EventInResponse,
     PayloadInResponse,
@@ -25,7 +24,7 @@ async def server_connection_with_retry(config: Config) -> None:
         device_wmi = init_wmi(config)
         while True:
             try:
-                await start_connection(config.server, device_wmi)
+                await start_connection(config.server, config.device_token, device_wmi)
             except (websockets.exceptions.ConnectionClosedError, OSError, RuntimeError):
                 logger.debug(
                     f"will try reconnection after {config.reconnect_delay} seconds"
@@ -35,34 +34,11 @@ async def server_connection_with_retry(config: Config) -> None:
         logger.debug("catch CancelledError during shutdown")
 
 
-async def process_registration(
-    websocket: websockets.WebSocketClientProtocol, computer_wmi: wmi.WMI
-) -> bool:
-    logger.info("starting registration...")
-    computer = get_computer_details(computer_wmi).json()
-    logger.bind(payload=computer).debug("process registration")
-    await websocket.send(computer)
-    auth_response = json.loads(await websocket.recv())
-    logger.debug(auth_response)
-    status = Status(**auth_response)
-    logger.info(f"registration status: {status.status}")
-    return status.status == StatusType.registration_success
-
-
 async def start_connection(
-    server_endpoint: str, computer_wmi: wmi.WMI
+    server_endpoint: str, device_token: str, computer_wmi: wmi.WMI
 ) -> None:  # noqa: WPS210
     logger.info(f"starting connection to server {server_endpoint}")
-    websocket = await websockets.connect(server_endpoint)
-    try:
-        if not await process_registration(websocket, computer_wmi):
-            exit(1)  # noqa: WPS421
-    except Exception as unknown_error:
-        # fixme
-        #  while windows start service cant get data from wmi for unknown reason
-        #  raising error for reconnecting later when wmi work
-        logger.error(f"unknown error during registration {unknown_error}")
-        raise RuntimeError
+    websocket = await websockets.connect(server_endpoint, extra_headers={"token": device_token})
 
     while True:
         p = await websocket.recv()
@@ -75,14 +51,14 @@ async def start_connection(
             continue  # todo error response when backend change events format
 
         try:
-            event_payload: Union[PayloadInResponse, EventErrorResponse] = handle_event(
-                event_type=request.event.type,
-                payload=request.payload,
+            event_payload: PayloadInResponse = handle_event(
+                event_type=request.method,
+                payload=request.params,
                 computer=computer_wmi,
             )
         except KeyError:
-            event_payload = EventErrorResponse(error="event is not supported")
-        response = EventInResponse(event=request.event, payload=event_payload).json()
+            event_payload = EventInResponse(error={"detail": "event is not supported"})
+        response = EventInResponse(sync_id=request.sync_id, method=request.method, result=event_payload).json()
         logger.bind(payload=response).debug(f"event response: {response}")
         await websocket.send(response)
     await websocket.close()
@@ -95,3 +71,12 @@ def run_service(config: Config) -> None:
         asyncio.run(task)
     finally:
         loop.close()
+
+
+if __name__ == "__main__":
+    import sys
+    _, server, device_token, *_ = sys.argv
+    server = "wss://api.mirumon.dev/devices/service"
+    device_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkZXZpY2UiOnsiaWQiOiIyNzgyNmYzYy01ZTE2LTQwYjQtODZiMS0yNjBjYThmOWVhMTAifSwiZXhwIjoxNjMwMzQ4MTIyLCJzdWIiOiJhY2Nlc3MifQ.y7_pBso9nzJUJjIi0oWKCJ5T7ObxakmtDN9q_Kcn8Mo"
+    config = Config(server=server, device_token=device_token, debug=True)
+    run_service(config)
