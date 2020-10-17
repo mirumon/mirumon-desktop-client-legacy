@@ -32,13 +32,14 @@ async def server_connection_with_retry(config: Config) -> None:
                 await asyncio.sleep(config.reconnect_delay)
     except asyncio.CancelledError:
         logger.debug("catch CancelledError during shutdown")
+        exit(1)
 
 
 async def start_connection(
     server_endpoint: str, device_token: str, computer_wmi: wmi.WMI
 ) -> None:  # noqa: WPS210
     logger.info(f"starting connection to server {server_endpoint}")
-    websocket = await websockets.connect(server_endpoint, extra_headers={"token": device_token})
+    websocket = await websockets.connect(server_endpoint, extra_headers={"Authorization": device_token})
 
     while True:
         p = await websocket.recv()
@@ -57,9 +58,9 @@ async def start_connection(
                 computer=computer_wmi,
             )
         except KeyError:
-            event_payload = EventInResponse(error={"detail": "event is not supported"})
-        response = EventInResponse(sync_id=request.sync_id, method=request.method, result=event_payload).json()
-        logger.bind(payload=response).debug(f"event response: {response}")
+            event_payload = EventInResponse(id=request.id, method=request.method, error={"detail": "event is not supported"})
+        response = EventInResponse(id=request.id, method=request.method, result=event_payload).json()
+        logger.debug(f"event response: {response}")
         await websocket.send(response)
     await websocket.close()
 
@@ -77,6 +78,6 @@ if __name__ == "__main__":
     import sys
     _, server, device_token, *_ = sys.argv
     server = "wss://api.mirumon.dev/devices/service"
-    device_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkZXZpY2UiOnsiaWQiOiIyNzgyNmYzYy01ZTE2LTQwYjQtODZiMS0yNjBjYThmOWVhMTAifSwiZXhwIjoxNjMwMzQ4MTIyLCJzdWIiOiJhY2Nlc3MifQ.y7_pBso9nzJUJjIi0oWKCJ5T7ObxakmtDN9q_Kcn8Mo"
+    device_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkZXZpY2UiOnsiaWQiOiIxODBkYTIwMi0xZjQ4LTQ2MTctYmE2Yi04ZThjN2Y3MThjZDkifSwiZXhwIjoxNjMzOTAwNDQ1LCJzdWIiOiJhY2Nlc3MifQ.vO-2kUD9wnZU9g06mf531vYbpSWutqqv86aQNMa8f20"
     config = Config(server=server, device_token=device_token, debug=True)
     run_service(config)

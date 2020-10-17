@@ -61,13 +61,14 @@ class Event(BaseModel):
 
 
 class EventInRequest(BaseModel):
-    sync_id: UUID
+    id: UUID
     method: EventType
-    params: dict
+    params: Optional[dict]
 
 
 class EventInResponse(BaseModel):
-    sync_id: UUID
+    status: str = "ok"
+    id: UUID
     method: EventType    
-    result: PayloadInResponse
+    result: Optional[PayloadInResponse]
     error: Optional[dict]

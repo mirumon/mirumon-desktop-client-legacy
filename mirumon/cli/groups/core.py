@@ -12,7 +12,7 @@ DEFAULT_DELAY = 10
 DEFAULT_ATTEMPTS = 10
 
 
-@group.command(hidden=True)
+@group.command()
 def run(
     server: str,
     device_token: Optional[str] = None,
