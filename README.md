@@ -27,15 +27,16 @@ Install the client as a service and run:
 
 * Note: Do not forget to run  the terminal as administrator
 ```bash
-mirumon install wss://your-mirumon-server.com/clients/ws servertoken
-mirumon start
+mirumon install wss://your-mirumon-server.com/service servertoken
+# example 
+mirumon run wss://your-mirumon-server.com/service 718fedaeb5006380e37998aa867eb21e
 ```
 
-Stop, restart, and remove service:
- 
+Basic commands for managing a service: 
 ```bash
-mirumon stop
+mirumon start
 mirumon restart
+mirumon stop
 mirumon remove
 ```
 
@@ -53,13 +54,9 @@ After installation, you can use client cli:
 ```bash
 mirumon --help
 ```
-* Use `nuitka` to convert python code to `.exe`:
+Use `nuitka` to convert python code to `.exe`:
+* Note: Install mingw64 
 
 ```bash
 python -m nuitka --standalone --windows-dependency-tool=pefile --experimental=use_pefile_recurse --experimental=use_pefile_fullrecurse --follow-imports  --mingw64 --show-progress .\mirumon\cli\mirumon.py
-```
-
-Also you can run client in your terminal session:
-```bash
-mirumon run wss://your-mirumon-server.com/clients/ws token
 ```
