@@ -1,9 +1,12 @@
 [tool.poetry]
 name = "mirumon-desktop-client"
 version = "0.1.0"
-description = "Windows monitoring client"
+description = "Desktop monitoring client"
 
-authors = ["Mirumon Team"]
+authors = [
+    "Nick Khitrov <khitrov34@gmail.com>",
+    "Nik Sidnev <snive2013@yandex.ru>"
+]
 repository = "https://github.com/mirumon/mirumon-descktop-client"
 
 readme = "README.md"
