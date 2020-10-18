@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mirumon-desktop-client"
-version = "0.0.1"
+version = "0.1.0"
 description = "Windows monitoring client"
 
 authors = ["Mirumon Team"]
