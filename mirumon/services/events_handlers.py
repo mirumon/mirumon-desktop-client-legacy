@@ -2,8 +2,8 @@ from typing import Any, Callable, Dict
 
 import wmi
 
-from app.schemas.events.base import EventType, PayloadInRequest, PayloadInResponse
-from app.services.wmi_api.hardware import (
+from mirumon.schemas.events.base import EventType, PayloadInResponse
+from mirumon.services.wmi_api.hardware import (
     get_cpu,
     get_gpu,
     get_hardware,
@@ -11,17 +11,17 @@ from app.services.wmi_api.hardware import (
     get_network_adapters,
     get_physical_disks,
 )
-from app.services.wmi_api.operating_system import (
+from mirumon.services.wmi_api.operating_system import (
     command_execute,
     get_computer_details,
     get_computer_in_list,
     shutdown,
 )
-from app.services.wmi_api.software import get_installed_programs
+from mirumon.services.wmi_api.software import get_installed_programs
 
 
 def handle_event(
-    *, event_type: EventType, payload: PayloadInRequest, computer: wmi.WMI
+    *, event_type: EventType, payload: dict, computer: wmi.WMI
 ) -> PayloadInResponse:
     func = event_handlers[event_type]
     return func(computer, payload)

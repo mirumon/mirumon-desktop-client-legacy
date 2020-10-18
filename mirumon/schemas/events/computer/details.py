@@ -2,23 +2,23 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
-from app.schemas.computer.details import OperatingSystemModel
-from app.schemas.computer.users import UserModel
+from mirumon.schemas.computer.details import OperatingSystemModel
+from mirumon.schemas.computer.users import UserModel
 
 
 class ComputerInList(BaseModel):
     mac_address: str
     name: str
-    username: str
+    domain: Optional[str]
     workgroup: Optional[str]
-    domain: str
+    last_user: UserModel
     part_of_domain: bool
 
 
 class ComputerDetails(BaseModel):
     mac_address: str
     name: str
-    domain: str
+    domain: Optional[str]
     workgroup: Optional[str]
-    current_user: UserModel
+    last_user: UserModel
     os: List[OperatingSystemModel]

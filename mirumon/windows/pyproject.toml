@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "mirumon-windows"
+version = "0.0.1"
+description = "Exporters for computer data from Windows"
+authors = ["Mirumon Team"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "~3.8"
+
+wmi = "^1.4"
+pypiwin32 = "^223.0"
+nuitka = { git = "https://github.com/Nuitka/Nuitka", rev="dd621ca1"}
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry>=1.0"]
+build-backend = "poetry.masonry.api"

@@ -2,7 +2,7 @@ from typing import Any, List
 
 import wmi
 
-from app.schemas.computer.hardware import (
+from mirumon.schemas.computer.hardware import (
     HardwareModel,
     MotherBoardModel,
     NetworkAdapterModel,

@@ -7,11 +7,11 @@ from uuid import getnode as get_mac
 import wmi
 from loguru import logger
 
-from app.schemas.computer.details import ComputerSystemModel, OperatingSystemModel
-from app.schemas.computer.users import LogonType, UserModel
-from app.schemas.events.computer.details import ComputerDetails, ComputerInList
-from app.schemas.events.computer.execute import ExecuteCommand, ExecuteResult
-from app.schemas.events.computer.shutdown import Shutdown
+from mirumon.schemas.computer.details import ComputerSystemModel, OperatingSystemModel
+from mirumon.schemas.computer.users import LogonType, UserModel
+from mirumon.schemas.events.computer.details import ComputerDetails, ComputerInList
+from mirumon.schemas.events.computer.execute import ExecuteCommand, ExecuteResult
+from mirumon.schemas.events.computer.shutdown import Shutdown
 
 
 def get_computer_mac_address() -> str:
@@ -47,7 +47,7 @@ def get_computer_details(computer: wmi.WMI, *_: Any) -> ComputerDetails:
         name=model.name,
         domain=model.domain,
         workgroup=model.workgroup,
-        current_user=user,
+        last_user=user,
         os=os,
     )
 
@@ -61,7 +61,7 @@ def get_computer_in_list(computer: wmi.WMI, *_: Any) -> ComputerInList:
         name=pc.name,
         domain=pc.domain,
         workgroup=pc.workgroup,
-        username=user.name,
+        last_user=user,
         part_of_domain=pc.part_of_domain,
     )
 

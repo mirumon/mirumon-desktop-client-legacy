@@ -1,6 +1,8 @@
 from typing import Optional
 
-from app.schemas.computer.base import BaseModelWMI
+from pydantic import Field
+
+from mirumon.schemas.computer.base import BaseModelWMI
 
 
 class ComputerSystemModel(BaseModelWMI):
@@ -12,7 +14,7 @@ class ComputerSystemModel(BaseModelWMI):
 
 
 class OperatingSystemModel(BaseModelWMI):
-    caption: str
+    name: str = Field(..., alias="caption")
     version: str
     build_number: str
     os_architecture: str
