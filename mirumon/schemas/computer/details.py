@@ -1,5 +1,7 @@
 from typing import Optional
+
 from pydantic import Field
+
 from mirumon.schemas.computer.base import BaseModelWMI
 
 

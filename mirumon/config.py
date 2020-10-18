@@ -1,11 +1,11 @@
 import asyncio
 import logging
 import signal
-from typing import Any, Optional
+from typing import Any
 
 import wmi
 from loguru import logger
-from pydantic import BaseModel, AnyUrl
+from pydantic import AnyUrl, BaseModel
 
 
 class Config(BaseModel):

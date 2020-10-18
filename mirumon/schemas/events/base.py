@@ -69,6 +69,6 @@ class EventInRequest(BaseModel):
 class EventInResponse(BaseModel):
     status: str = "ok"
     id: UUID
-    method: EventType    
+    method: EventType
     result: Optional[PayloadInResponse]
     error: Optional[dict]

@@ -1,6 +1,5 @@
 import asyncio
 import json
-from typing import Union
 
 import websockets
 import wmi
@@ -13,9 +12,7 @@ from mirumon.schemas.events.base import (
     EventInResponse,
     PayloadInResponse,
 )
-from mirumon.schemas.status import Status, StatusType
 from mirumon.services.events_handlers import handle_event
-from mirumon.services.wmi_api.operating_system import get_computer_details
 
 
 @logger.catch
@@ -39,7 +36,9 @@ async def start_connection(
     server_endpoint: str, device_token: str, computer_wmi: wmi.WMI
 ) -> None:  # noqa: WPS210
     logger.info(f"starting connection to server {server_endpoint}")
-    websocket = await websockets.connect(server_endpoint, extra_headers={"Authorization": device_token})
+    websocket = await websockets.connect(
+        server_endpoint, extra_headers={"Authorization": device_token}
+    )
 
     while True:
         p = await websocket.recv()
@@ -53,13 +52,17 @@ async def start_connection(
 
         try:
             event_payload: PayloadInResponse = handle_event(
-                event_type=request.method,
-                payload=request.params,
-                computer=computer_wmi,
+                event_type=request.method, payload=request.params, computer=computer_wmi
             )
         except KeyError:
-            event_payload = EventInResponse(id=request.id, method=request.method, error={"detail": "event is not supported"})
-        response = EventInResponse(id=request.id, method=request.method, result=event_payload).json()
+            event_payload = EventInResponse(
+                id=request.id,
+                method=request.method,
+                error={"detail": "event is not supported"},
+            )
+        response = EventInResponse(
+            id=request.id, method=request.method, result=event_payload
+        ).json()
         logger.debug(f"event response: {response}")
         await websocket.send(response)
     await websocket.close()
@@ -76,6 +79,7 @@ def run_service(config: Config) -> None:
 
 if __name__ == "__main__":
     import sys
+
     _, server, device_token, *_ = sys.argv
     server = "wss://api.mirumon.dev/devices/service"
     device_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkZXZpY2UiOnsiaWQiOiIxODBkYTIwMi0xZjQ4LTQ2MTctYmE2Yi04ZThjN2Y3MThjZDkifSwiZXhwIjoxNjMzOTAwNDQ1LCJzdWIiOiJhY2Nlc3MifQ.vO-2kUD9wnZU9g06mf531vYbpSWutqqv86aQNMa8f20"
