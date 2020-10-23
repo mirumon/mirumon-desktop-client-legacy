@@ -15,7 +15,7 @@ DEFAULT_ATTEMPTS = 10
 @group.command()
 def run(
     server: str,
-    device_token: Optional[str] = None,
+    device_token: str,
     reconnect_delay: int = DEFAULT_DELAY,
     reconnect_attempts: int = DEFAULT_ATTEMPTS,
     allow_shutdown: bool = False,

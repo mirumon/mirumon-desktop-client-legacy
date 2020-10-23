@@ -10,7 +10,7 @@ python = "~3.8"
 
 wmi = "^1.4"
 pypiwin32 = "^223.0"
-nuitka = { git = "https://github.com/Nuitka/Nuitka", rev="dd621ca1"}
+nuitka = { git = "https://github.com/Nuitka/Nuitka", rev="98818b787e"}
 
 [tool.poetry.dev-dependencies]
 

@@ -60,6 +60,13 @@ async def start_connection(
                 method=request.method,
                 error={"detail": "event is not supported"},
             )
+        except Exception as unhandled_error:
+            logger.exception(str(unhandled_error))
+            event_payload = EventInResponse(
+                id=request.id,
+                method=request.method,
+                error={"detail": str(unhandled_error)},
+            )
         response = EventInResponse(
             id=request.id, method=request.method, result=event_payload
         ).json()

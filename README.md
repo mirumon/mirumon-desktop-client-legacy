@@ -17,10 +17,11 @@ After that, the executable is installed as a **windows service** using [nssm](ht
 
 ## Usage
 
-View all available teams:
+View all available commands:
 
 ```bash
 mirumon --help
+mirumon <command> --help
 ```
 
 Install the client as a service and run:
@@ -29,15 +30,19 @@ Install the client as a service and run:
 ```bash
 mirumon install wss://your-mirumon-server.com/service servertoken
 # example 
-mirumon run wss://your-mirumon-server.com/service 718fedaeb5006380e37998aa867eb21e
+mirumon run wss://your-mirumon-server.com/service eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ehth...Q.24fEekbD2JJq_ULs9fGyRVPD_v67c-QDoFnJ89pf-XI
 ```
 
 Basic commands for managing a service: 
 ```bash
-mirumon start
-mirumon restart
-mirumon stop
-mirumon remove
+run      # run service in shell without installing as service
+
+install  # install client as service (daemon) on pc
+remove   # remove service from pc. stop service before it
+
+start    # start installed service
+stop     # stop installed service
+restart  # restart installed service
 ```
 
 ## Develop
@@ -52,11 +57,11 @@ poetry install
 After installation, you can use client cli:
 
 ```bash
-mirumon --help
+poetry run mirumon --help
 ```
 Use `nuitka` to convert python code to `.exe`:
-* Note: Install mingw64 
+* Note: Install mingw64. See `nuitka` docs for more info. 
 
 ```bash
-python -m nuitka --standalone --windows-dependency-tool=pefile --experimental=use_pefile_recurse --experimental=use_pefile_fullrecurse --follow-imports  --mingw64 --show-progress .\mirumon\cli\mirumon.py
+python -m nuitka --standalone --windows-dependency-tool=pefile --experimental=use_pefile_recurse --experimental=use_pefile_fullrecurse --output-dir=_build --follow-imports --mingw64 --show-progress .\mirumon\cli\mirumon.py
 ```
