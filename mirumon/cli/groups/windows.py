@@ -1,12 +1,16 @@
 import pathlib
 import subprocess
+import pathlib
 
 import typer
 
 from mirumon.cli.groups.core import DEFAULT_ATTEMPTS, DEFAULT_DELAY
 from mirumon.cli.helpers import create_logs_dir, current_dir
 
-NSSM_PATH = "nssm"
+
+current_path = pathlib.Path().absolute()
+
+NSSM_PATH = current_path / "thirdparty" / "nssm.exe"
 SERVICE_NAME = "mirumon"
 
 group = typer.Typer()
@@ -77,7 +81,6 @@ def nssm_service_setup_commands(
     allow_shutdown: bool,
     debug: bool,
 ) -> list:
-    print(executable_path)
     return [
         [NSSM_PATH, "install", SERVICE_NAME, executable_path],
         [NSSM_PATH, "set", SERVICE_NAME, "Application", executable_path],
@@ -85,24 +88,21 @@ def nssm_service_setup_commands(
             NSSM_PATH,
             "set",
             SERVICE_NAME,
-            "AppParamters",
+            "AppParameters",
             "run",
-            server,
-            "--device-token",
-            device_token,
+            str(server),
+            str(device_token),
             "--reconnect-delay",
-            reconnect_delay,
-            "--reconnect_attempts",
-            reconnect_attempts,
-            "--allow-shutdown",
-            allow_shutdown,
-            "--debug",
-            debug,
+            str(reconnect_delay),
+            "--reconnect-attempts",
+            str(reconnect_attempts),
+            "--allow-shutdown" if allow_shutdown else "--no-allow-shutdown",
+            "--debug" if debug else "--no-debug",
         ],
         [NSSM_PATH, "set", SERVICE_NAME, "AppStdout", stdout_path],
         [NSSM_PATH, "set", SERVICE_NAME, "AppStderr", stderr_path],
         [NSSM_PATH, "set", SERVICE_NAME, "AppExit", "Default", "Restart"],
-        [NSSM_PATH, "set", SERVICE_NAME, "AppRestartDelay", 0],
+        [NSSM_PATH, "set", SERVICE_NAME, "AppRestartDelay", "0"],
         [NSSM_PATH, "set", SERVICE_NAME, "DependOnService", "MpsSvc"],
         [NSSM_PATH, "set", SERVICE_NAME, "DependOnService", "winmgmt"],
     ]
