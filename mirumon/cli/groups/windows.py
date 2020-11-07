@@ -1,12 +1,10 @@
 import pathlib
 import subprocess
-import pathlib
 
 import typer
 
 from mirumon.cli.groups.core import DEFAULT_ATTEMPTS, DEFAULT_DELAY
 from mirumon.cli.helpers import create_logs_dir, current_dir
-
 
 current_path = pathlib.Path().absolute()
 

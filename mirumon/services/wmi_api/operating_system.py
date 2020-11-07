@@ -74,7 +74,10 @@ def shutdown(computer: wmi.WMI, *_: Any) -> Shutdown:
     return Shutdown(status="ok")
 
 
-def command_execute(_: wmi.WMI, payload: ExecuteCommand) -> ExecuteResult:
+def command_execute(_: wmi.WMI, payload: dict) -> ExecuteResult:
+    execute = ExecuteCommand(**payload)
+    command = f"{execute.command} {execute.args_str}"
+
     executor = ThreadPoolExecutor(max_workers=1)
-    asyncio.get_event_loop().run_in_executor(executor, subprocess.call, payload.command)
+    asyncio.get_event_loop().run_in_executor(executor, subprocess.call, command)
     return ExecuteResult(status="ok")
