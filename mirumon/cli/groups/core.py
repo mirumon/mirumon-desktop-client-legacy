@@ -1,5 +1,3 @@
-from typing import Optional
-
 import typer
 
 from mirumon.cli.helpers import create_logs_dir
