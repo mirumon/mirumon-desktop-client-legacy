@@ -3,7 +3,7 @@ from typing import Optional
 import typer
 
 from mirumon.cli.helpers import create_logs_dir
-from mirumon.client.main import run_service
+from mirumon.main import run_service
 from mirumon.config import Config
 
 group = typer.Typer()

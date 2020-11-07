@@ -7,11 +7,11 @@ from uuid import getnode as get_mac
 import wmi
 from loguru import logger
 
-from mirumon.schemas.computer.details import ComputerSystemModel, OperatingSystemModel
-from mirumon.schemas.computer.users import LogonType, UserModel
-from mirumon.schemas.events.computer.details import ComputerDetails, ComputerInList
-from mirumon.schemas.events.computer.execute import ExecuteCommand, ExecuteResult
-from mirumon.schemas.events.computer.shutdown import Shutdown
+from mirumon.schemas.devices.details import ComputerSystemModel, OperatingSystemModel
+from mirumon.schemas.devices.users import LogonType, UserModel
+from mirumon.schemas.events.details import ComputerDetails, ComputerInList
+from mirumon.schemas.events.execute import ExecuteCommand, ExecuteResult
+from mirumon.schemas.events.shutdown import Shutdown
 
 
 def get_computer_mac_address() -> str:

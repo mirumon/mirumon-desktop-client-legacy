@@ -4,7 +4,7 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from mirumon.schemas.computer.hardware import (
+from mirumon.schemas.devices.hardware import (
     HardwareModel,
     MotherBoardModel,
     NetworkAdapterModel,
@@ -12,14 +12,14 @@ from mirumon.schemas.computer.hardware import (
     ProcessorModel,
     VideoControllerModel,
 )
-from mirumon.schemas.computer.software import InstalledProgramModel
-from mirumon.schemas.events.computer.details import ComputerDetails, ComputerInList
-from mirumon.schemas.events.computer.execute import ExecuteCommand, ExecuteResult
-from mirumon.schemas.events.computer.shutdown import Shutdown
+from mirumon.schemas.devices.software import InstalledProgramModel
+from mirumon.schemas.events.details import ComputerDetails, ComputerInList
+from mirumon.schemas.events.execute import ExecuteCommand, ExecuteResult
+from mirumon.schemas.events.shutdown import Shutdown
 
 
 class EventType(str, Enum):  # noqa: WPS600
-    computers_list: str = "list"
+    devices_list: str = "list"
     details: str = "detail"
 
     hardware: str = "hardware"

@@ -3,7 +3,7 @@ from typing import Any, Callable, Dict
 import wmi
 
 from mirumon.schemas.events.base import EventType, PayloadInResponse
-from mirumon.services.wmi_api.hardware import (
+from mirumon.infra.windows.backend.hardware import (
     get_cpu,
     get_gpu,
     get_hardware,
@@ -11,13 +11,13 @@ from mirumon.services.wmi_api.hardware import (
     get_network_adapters,
     get_physical_disks,
 )
-from mirumon.services.wmi_api.operating_system import (
+from mirumon.infra.windows.backend.operating_system import (
     command_execute,
     get_computer_details,
     get_computer_in_list,
     shutdown,
 )
-from mirumon.services.wmi_api.software import get_installed_programs
+from mirumon.infra.windows.backend.software import get_installed_programs
 
 
 def handle_event(
@@ -29,7 +29,7 @@ def handle_event(
 
 event_handlers: Dict[EventType, Callable[[wmi.WMI, Any], PayloadInResponse]] = {
     EventType.details: get_computer_details,
-    EventType.computers_list: get_computer_in_list,
+    EventType.devices_list: get_computer_in_list,
     EventType.installed_programs: get_installed_programs,
     EventType.hardware_cpu: get_cpu,
     EventType.hardware_motherboard: get_motherboard,

@@ -2,8 +2,8 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
-from mirumon.schemas.computer.details import OperatingSystemModel
-from mirumon.schemas.computer.users import UserModel
+from mirumon.schemas.devices.details import OperatingSystemModel
+from mirumon.schemas.devices.users import UserModel
 
 
 class ComputerInList(BaseModel):

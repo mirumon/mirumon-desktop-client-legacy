@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import Field
 
-from mirumon.schemas.computer.base import BaseModelWMI
+from mirumon.schemas.devices.base import BaseModelWMI
 
 
 class ComputerSystemModel(BaseModelWMI):

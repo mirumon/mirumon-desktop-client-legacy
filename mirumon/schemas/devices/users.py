@@ -1,6 +1,6 @@
 from enum import IntEnum
 
-from mirumon.schemas.computer.base import BaseModelWMI
+from mirumon.schemas.devices.base import BaseModelWMI
 
 
 class LogonType(IntEnum):

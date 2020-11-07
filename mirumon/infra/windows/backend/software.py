@@ -3,7 +3,7 @@ from typing import Any, List
 import wmi
 from loguru import logger
 
-from mirumon.schemas.computer.software import InstalledProgramModel
+from mirumon.schemas.devices.software import InstalledProgramModel
 
 
 def get_installed_programs(computer: wmi.WMI, *_: Any) -> List[InstalledProgramModel]:

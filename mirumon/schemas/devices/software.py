@@ -1,4 +1,4 @@
-from mirumon.schemas.computer.base import BaseModelWMI
+from mirumon.schemas.devices.base import BaseModelWMI
 
 
 class InstalledProgramModel(BaseModelWMI):
